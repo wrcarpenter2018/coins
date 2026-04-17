@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coin Rush</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-height:100vh}
@@ -97,6 +98,11 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="lbl">Choose Your Skin</div>
     <div class="skin-grid" id="skinGrid"></div>
     <button id="startBtn" onclick="startGame()">🎲 START GAME</button>
+    <div style="margin-top:18px;text-align:center">
+      <div style="font-size:11px;letter-spacing:2px;color:#888;text-transform:uppercase;margin-bottom:8px">Scan to play on phone</div>
+      <div id="qrcode" style="display:inline-block"></div>
+      <div style="font-size:10px;color:#555;margin-top:6px">wrcarpenter2018.github.io/coins</div>
+    </div>
     <div class="rules">
       <b>HOW TO PLAY</b><br>
       Roll the dice against 2 CPUs each round<br>
@@ -400,6 +406,14 @@ window.addEventListener('DOMContentLoaded', function(){
   document.getElementById('nameInput').addEventListener('keydown', function(e){
     if(e.key==='Enter') startGame();
   });
+  try {
+    new QRCode(document.getElementById('qrcode'), {
+      text: 'https://wrcarpenter2018.github.io/coins',
+      width: 128, height: 128,
+      colorDark: '#FFD700', colorLight: '#0a0a1a',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) { console.log('QR error', e); }
 });
 </script>
 </body>
