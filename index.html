@@ -466,48 +466,53 @@ function draw() {
 
 function drawRacket(x, y, w, h, frameColor, gripColor, skinEmoji) {
   var cx = x + w/2;
-  var headH = h * 0.68;
-  var headW = w + 10;
+  var headW = 36;
+  var headH = h * 0.65;
   var headY = y;
-  var gripH = h * 0.32;
-  var gripY = y + headH;
-  var gripW = 6;
+  var headCY = headY + headH/2;
+  var gripH = h * 0.35;
+  var gripY = headY + headH;
+  var gripW = 7;
 
-  // Grip / handle
+  // Handle
   ctx.fillStyle = gripColor;
-  ctx.shadowColor = gripColor;
-  ctx.shadowBlur = 4;
-  roundRect(cx - gripW/2, gripY, gripW, gripH, 3);
-  ctx.shadowBlur = 0;
-
-  // Racket frame (oval)
-  ctx.strokeStyle = frameColor;
-  ctx.lineWidth = 4;
-  ctx.shadowColor = frameColor;
-  ctx.shadowBlur = 10;
   ctx.beginPath();
-  ctx.ellipse(cx, headY + headH/2, headW/2, headH/2, 0, 0, Math.PI*2);
+  ctx.roundRect ? ctx.roundRect(cx - gripW/2, gripY, gripW, gripH, 3) : ctx.rect(cx - gripW/2, gripY, gripW, gripH);
+  ctx.fill();
+
+  // Racket frame using bezier curves (oval shape)
+  ctx.strokeStyle = frameColor;
+  ctx.lineWidth = 5;
+  ctx.shadowColor = frameColor;
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.moveTo(cx, headY);
+  ctx.bezierCurveTo(cx + headW, headY,       cx + headW, headY + headH, cx, headY + headH);
+  ctx.bezierCurveTo(cx - headW, headY + headH, cx - headW, headY,       cx, headY);
+  ctx.closePath();
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // Strings (horizontal)
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  // Strings inside oval — horizontal
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
   ctx.lineWidth = 1;
-  var strCount = 5;
-  for(var i=1; i<strCount; i++){
-    var sy = headY + (headH / strCount) * i;
-    var hw = Math.sqrt(Math.max(0, Math.pow(headW/2,2) - Math.pow(sy-(headY+headH/2),2)));
+  var rows = 6;
+  for(var i=1; i<rows; i++){
+    var sy = headY + (headH/rows)*i;
+    var t = (sy - headCY) / (headH/2);
+    var hw = headW * Math.sqrt(Math.max(0, 1 - t*t)) * 0.92;
     ctx.beginPath(); ctx.moveTo(cx-hw, sy); ctx.lineTo(cx+hw, sy); ctx.stroke();
   }
-  // Strings (vertical center)
-  ctx.beginPath(); ctx.moveTo(cx, headY+2); ctx.lineTo(cx, headY+headH-2); ctx.stroke();
+  // Strings — vertical
+  ctx.beginPath(); ctx.moveTo(cx, headY+4); ctx.lineTo(cx, headY+headH-4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-headW*0.5, headY+headH*0.15); ctx.lineTo(cx-headW*0.5, headY+headH*0.85); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+headW*0.5, headY+headH*0.15); ctx.lineTo(cx+headW*0.5, headY+headH*0.85); ctx.stroke();
 
   // Skin emoji above racket
-  ctx.font = '14px Arial';
+  ctx.font = '15px Arial';
   ctx.textAlign = 'center';
-  ctx.shadowBlur = 0;
   ctx.fillStyle = '#fff';
-  ctx.fillText(skinEmoji, cx, headY - 4);
+  ctx.fillText(skinEmoji, cx, headY - 5);
 }
 
 function roundRect(x,y,w,h,r){
