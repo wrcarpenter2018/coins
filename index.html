@@ -111,7 +111,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="g-logo">🎾 COIN TENNIS</div>
     <div class="coin-badge">
       <div class="coin-num" id="coinDisplay">100</div>
-      <div class="coin-lbl">🪙 coins</div>
+      <div class="coin-lbl">🪙 coins to 1000</div>
     </div>
   </div>
 
@@ -382,14 +382,30 @@ function endMatch(playerWon) {
   }
   document.getElementById('coinDisplay').textContent = G.coins;
   setTimeout(function(){
-    document.getElementById('endEm').textContent = playerWon ? '🏆' : '😔';
+    var grandWin = G.coins >= 1000;
+    var brokeOut = G.coins <= 0;
+    document.getElementById('endEm').textContent = grandWin ? '💎' : playerWon ? '🏆' : brokeOut ? '💸' : '😔';
     var t = document.getElementById('endTitle');
-    t.textContent = playerWon ? 'YOU WIN!' : 'YOU LOSE!';
-    t.className = 'end-title '+(playerWon?'win':'lose');
-    document.getElementById('endSub').textContent = playerWon
-      ? 'Great match! +50 coins added to your total.'
-      : 'CPU wins this time. -50 coins. Try again!';
+    t.className = 'end-title '+(grandWin||playerWon?'win':'lose');
+    if(grandWin){
+      t.textContent = 'CHAMPION!';
+      document.getElementById('endSub').textContent = '🎉 You reached 1000 coins! You are the ultimate Coin Tennis Champion!';
+    } else if(brokeOut){
+      t.textContent = 'BROKE!';
+      document.getElementById('endSub').textContent = 'You ran out of coins! Better luck next time.';
+    } else if(playerWon){
+      t.textContent = 'MATCH WIN!';
+      document.getElementById('endSub').textContent = 'Great match! +50 coins. Keep playing to reach 1000!';
+    } else {
+      t.textContent = 'MATCH LOST!';
+      document.getElementById('endSub').textContent = 'CPU wins this time. -50 coins. Reach 1000 coins to win!';
+    }
     document.getElementById('endCoins').textContent = G.coins;
+    // Hide play again if game is truly over (grand win or broke)
+    var btns = document.querySelector('.end-btns');
+    btns.innerHTML = grandWin || brokeOut
+      ? '<button class="end-btn again" onclick="location.reload()">🔄 NEW GAME</button>'
+      : '<button class="end-btn again" onclick="startMatch()">🎾 NEXT MATCH</button><button class="end-btn" onclick="show(\'welcome\')">🏠 MENU</button>';
     show('end');
   }, 2000);
 }
