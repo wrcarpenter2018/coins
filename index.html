@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coin Rush</title>
+<title>Coin Rush Tennis</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -11,129 +11,140 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 .hidden{display:none!important}
 
 /* WELCOME */
-#welcome{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at top,#1a0a3e,#0a0a1a)}
-.logo-em{font-size:80px;text-align:center}
-.logo-title{font-size:48px;font-weight:900;background:linear-gradient(180deg,#FFD700,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center}
-.logo-sub{font-size:12px;letter-spacing:5px;color:#FFD700;text-transform:uppercase;text-align:center;margin-bottom:28px}
-.box{background:rgba(255,215,0,.08);border:2px solid rgba(255,215,0,.3);border-radius:20px;padding:28px;max-width:460px;width:100%}
-.lbl{font-size:11px;letter-spacing:3px;color:#FFD700;text-transform:uppercase;margin-bottom:10px;text-align:center}
-#nameInput{width:100%;padding:13px;font-size:17px;font-family:inherit;font-weight:bold;background:rgba(255,255,255,.08);border:2px solid rgba(255,215,0,.5);border-radius:10px;color:#fff;text-align:center;margin-bottom:18px;outline:none}
-#nameInput:focus{border-color:#FFD700}
+#welcome{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at top,#0a2a0a,#0a0a1a)}
+.logo-em{font-size:72px;text-align:center}
+.logo-title{font-size:44px;font-weight:900;background:linear-gradient(180deg,#FFD700,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center}
+.logo-sub{font-size:12px;letter-spacing:5px;color:#4caf50;text-transform:uppercase;text-align:center;margin-bottom:24px}
+.box{background:rgba(76,175,80,.08);border:2px solid rgba(76,175,80,.3);border-radius:20px;padding:26px;max-width:460px;width:100%}
+.lbl{font-size:11px;letter-spacing:3px;color:#4caf50;text-transform:uppercase;margin-bottom:10px;text-align:center}
+#nameInput{width:100%;padding:13px;font-size:17px;font-family:inherit;font-weight:bold;background:rgba(255,255,255,.08);border:2px solid rgba(76,175,80,.5);border-radius:10px;color:#fff;text-align:center;margin-bottom:18px;outline:none}
+#nameInput:focus{border-color:#4caf50}
 .skin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
-.skin-btn{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px;cursor:pointer;font-size:28px;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.skin-btn{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px;cursor:pointer;font-size:26px;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
 .skin-btn span{font-size:9px;color:#888;font-family:Arial,sans-serif;font-weight:bold;letter-spacing:1px;text-transform:uppercase}
-.skin-btn:hover{border-color:#FFD700;transform:translateY(-2px)}
-.skin-btn.sel{border-color:#FFD700;background:rgba(255,215,0,.15);box-shadow:0 0 15px rgba(255,215,0,.3)}
-#startBtn{width:100%;padding:15px;font-size:18px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:3px;background:linear-gradient(135deg,#FFD700,#FF8C00);border:none;border-radius:10px;color:#000;cursor:pointer;transition:all .2s}
-#startBtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,215,0,.4)}
-.rules{margin-top:14px;background:rgba(0,0,0,.3);border-radius:8px;padding:11px;font-size:11px;color:#888;line-height:1.9;text-align:center}
-.rules b{color:#FFD700}
+.skin-btn:hover{border-color:#4caf50;transform:translateY(-2px)}
+.skin-btn.sel{border-color:#4caf50;background:rgba(76,175,80,.15);box-shadow:0 0 12px rgba(76,175,80,.3)}
+#startBtn{width:100%;padding:15px;font-size:18px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:3px;background:linear-gradient(135deg,#4caf50,#2e7d32);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .2s}
+#startBtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(76,175,80,.4)}
+.rules{margin-top:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:10px;font-size:11px;color:#888;line-height:1.9;text-align:center}
+.rules b{color:#4caf50}
+.qr-area{margin-top:16px;text-align:center}
+.qr-lbl{font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:8px}
+#qrcode canvas,#qrcode img{border:3px solid #4caf50;border-radius:6px}
+.qr-url{font-size:10px;color:#444;margin-top:6px}
 
 /* GAME */
-#game{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;background:radial-gradient(ellipse at top,#0d1a0d,#0a0a1a);gap:16px}
-.game-top{width:100%;max-width:560px;display:flex;align-items:center;justify-content:space-between}
-.g-title{font-size:20px;font-weight:900;color:#FFD700}
-.coin-display{background:rgba(255,215,0,.15);border:2px solid rgba(255,215,0,.4);border-radius:14px;padding:6px 18px;text-align:center}
-.coin-num{font-size:22px;font-weight:900;color:#FFD700;line-height:1}
-.coin-lbl{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px}
+#game{min-height:100vh;display:flex;flex-direction:column;align-items:center;background:#0a1a0a;padding:12px}
+.game-hdr{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px}
+.g-logo{font-size:16px;font-weight:900;color:#4caf50}
+.coin-badge{background:rgba(255,215,0,.15);border:2px solid rgba(255,215,0,.4);border-radius:12px;padding:5px 14px;text-align:center}
+.coin-num{font-size:20px;font-weight:900;color:#FFD700;line-height:1}
+.coin-lbl{font-size:9px;color:#888;text-transform:uppercase}
 
-/* Wins tracker */
-.wins-row{display:flex;gap:10px;width:100%;max-width:560px;justify-content:center}
-.wins-card{background:#111128;border:2px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 10px;flex:1;text-align:center;max-width:160px;transition:all .3s}
-.wins-card.active{border-color:#FFD700;box-shadow:0 0 20px rgba(255,215,0,.25)}
-.wc-skin{font-size:26px;margin-bottom:4px}
-.wc-name{font-size:11px;font-weight:bold;color:#ccc;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wc-wins{display:flex;gap:5px;justify-content:center}
-.win-dot{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,215,0,.3);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .3s}
-.win-dot.filled{background:#FFD700;border-color:#FFD700;color:#000}
+/* Score board */
+.scoreboard{width:100%;max-width:640px;background:#111;border:2px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sb-player{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:100px}
+.sb-skin{font-size:26px}
+.sb-name{font-size:11px;color:#aaa;font-weight:bold;text-align:center}
+.sb-pts{font-size:28px;font-weight:900;color:#fff;line-height:1}
+.sb-games{font-size:11px;color:#888}
+.sb-mid{text-align:center}
+.sb-set{font-size:11px;letter-spacing:2px;color:#4caf50;text-transform:uppercase;margin-bottom:3px}
+.sb-vs{font-size:18px;font-weight:900;color:#333}
+.sb-games-row{display:flex;gap:6px;justify-content:center;margin-top:4px}
+.game-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .3s}
+.game-dot.won{background:#4caf50;border-color:#4caf50}
 
-/* Arena */
-.arena{background:#111128;border:2px solid rgba(255,215,0,.2);border-radius:18px;padding:22px;width:100%;max-width:560px;text-align:center}
-.round-badge{font-size:11px;letter-spacing:3px;color:#FFD700;text-transform:uppercase;margin-bottom:14px}
-.fighters{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:18px;flex-wrap:wrap}
-.fighter{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px}
-.f-skin{font-size:38px;transition:transform .3s}
-.f-name{font-size:11px;color:#aaa;font-weight:bold}
-.f-roll{font-size:32px;min-height:40px;display:flex;align-items:center;justify-content:center}
-.f-roll.winner{filter:drop-shadow(0 0 8px #FFD700)}
-.vs{font-size:20px;font-weight:900;color:#444;margin:0 4px}
-.result-msg{font-size:20px;font-weight:900;min-height:30px;margin-bottom:12px}
-.result-msg.win{color:#00ee88}
-.result-msg.lose{color:#ff4444}
-.result-msg.tie{color:#FFD700}
-.coins-change{font-size:14px;font-weight:bold;min-height:20px;margin-bottom:16px}
-.coins-change.pos{color:#00ee88}
-.coins-change.neg{color:#ff4444}
-#rollBtn{padding:14px 44px;font-size:16px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#FFD700,#FF8C00);border:none;border-radius:10px;color:#000;cursor:pointer;transition:all .2s}
-#rollBtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,215,0,.4)}
-#rollBtn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+/* Canvas wrap */
+.canvas-wrap{width:100%;max-width:640px;position:relative;border-radius:12px;overflow:hidden;border:2px solid rgba(76,175,80,.3);cursor:none}
+#tennis{display:block;width:100%;height:auto}
+.ctrl-hint{font-size:11px;color:#444;text-align:center;margin-top:8px;letter-spacing:1px}
 
-/* Log */
-.log{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;width:100%;max-width:560px;max-height:100px;overflow-y:auto;font-size:11px;color:#666}
-.log-line{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.log-line:last-child{border:none;color:#ccc}
+/* Message overlay */
+#msgOverlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;text-align:center;pointer-events:none;transition:opacity .3s}
+#msgOverlay.hide{opacity:0}
 
-/* WIN / LOSE screen */
-#end{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;background:radial-gradient(ellipse at center,#1a1a00,#0a0a1a)}
-.end-em{font-size:100px;margin-bottom:16px}
-.end-title{font-size:50px;font-weight:900;margin-bottom:10px}
-.end-title.win{background:linear-gradient(135deg,#FFD700,#FF8C00,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+/* END */
+#end{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;background:radial-gradient(ellipse at center,#0a2a0a,#0a0a1a)}
+.end-em{font-size:90px;margin-bottom:14px}
+.end-title{font-size:46px;font-weight:900;margin-bottom:10px}
+.end-title.win{background:linear-gradient(135deg,#FFD700,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .end-title.lose{color:#ff4444}
-.end-sub{font-size:16px;color:#aaa;margin-bottom:28px}
-.final-coins{font-size:42px;font-weight:900;color:#FFD700;margin-bottom:6px}
-.final-lbl{font-size:12px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
-.end-btn{background:linear-gradient(135deg,#FFD700,#FF8C00);border:none;border-radius:10px;color:#000;padding:15px 40px;font-size:16px;font-family:inherit;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px}
+.end-sub{font-size:15px;color:#aaa;margin-bottom:22px}
+.end-coins{font-size:44px;font-weight:900;color:#FFD700;margin-bottom:4px}
+.end-clbl{font-size:11px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:26px}
+.end-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.end-btn{background:linear-gradient(135deg,#4caf50,#2e7d32);border:none;border-radius:10px;color:#fff;padding:13px 32px;font-size:14px;font-family:inherit;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px}
+.end-btn.again{background:linear-gradient(135deg,#FFD700,#FF8C00);color:#000}
 </style>
 </head>
 <body>
 
 <!-- WELCOME -->
 <div id="welcome">
-  <div class="logo-em">🪙</div>
-  <div class="logo-title">COIN RUSH</div>
-  <div class="logo-sub">Roll to Win</div>
+  <div class="logo-em">🎾</div>
+  <div class="logo-title">COIN TENNIS</div>
+  <div class="logo-sub">Play to Win</div>
   <div class="box">
     <div class="lbl">Your Name</div>
     <input type="text" id="nameInput" placeholder="Enter your name..." maxlength="16" />
     <div class="lbl">Choose Your Skin</div>
     <div class="skin-grid" id="skinGrid"></div>
-    <button id="startBtn" onclick="startGame()">🎲 START GAME</button>
-    <div style="margin-top:18px;text-align:center">
-      <div style="font-size:11px;letter-spacing:2px;color:#888;text-transform:uppercase;margin-bottom:8px">Scan to play on phone</div>
-      <div id="qrcode" style="display:inline-block"></div>
-      <div style="font-size:10px;color:#555;margin-top:6px">wrcarpenter2018.github.io/coins</div>
-    </div>
+    <button id="startBtn" onclick="startGame()">🎾 PLAY TENNIS</button>
     <div class="rules">
       <b>HOW TO PLAY</b><br>
-      Roll the dice against 2 CPUs each round<br>
-      Highest roll <b>wins the round</b> • First to <b>3 round wins</b> wins the match<br>
-      Win a match = <b>+50 coins</b> &nbsp;|&nbsp; Lose = <b>-50 coins</b><br>
-      You start with <b>100 coins</b>
+      Move your mouse (or touch) to control your paddle<br>
+      First to <b>5 points</b> wins a game &nbsp;|&nbsp; First to <b>3 games</b> wins the match<br>
+      Win = <b>+50 coins</b> &nbsp;|&nbsp; Lose = <b>-50 coins</b> &nbsp;|&nbsp; Start with <b>100 coins</b>
+    </div>
+    <div class="qr-area">
+      <div class="qr-lbl">Scan to play on phone</div>
+      <div id="qrcode"></div>
+      <div class="qr-url">wrcarpenter2018.github.io/coins</div>
     </div>
   </div>
 </div>
 
 <!-- GAME -->
 <div id="game" class="hidden">
-  <div class="game-top">
-    <div class="g-title">🪙 COIN RUSH</div>
-    <div class="coin-display">
+  <div class="game-hdr">
+    <div class="g-logo">🎾 COIN TENNIS</div>
+    <div class="coin-badge">
       <div class="coin-num" id="coinDisplay">100</div>
-      <div class="coin-lbl">coins</div>
+      <div class="coin-lbl">🪙 coins</div>
     </div>
   </div>
 
-  <div class="wins-row" id="winsRow"></div>
-
-  <div class="arena">
-    <div class="round-badge" id="roundBadge">ROUND 1</div>
-    <div class="fighters" id="fighters"></div>
-    <div class="result-msg" id="resultMsg"></div>
-    <div class="coins-change" id="coinsChange"></div>
-    <button id="rollBtn" onclick="doRoll()">🎲 ROLL DICE</button>
+  <div class="scoreboard">
+    <div class="sb-player">
+      <div class="sb-skin" id="sbPlayerSkin">🧑</div>
+      <div class="sb-name" id="sbPlayerName">You</div>
+      <div class="sb-pts" id="sbPlayerPts">0</div>
+      <div class="sb-games">pts</div>
+    </div>
+    <div class="sb-mid">
+      <div class="sb-set" id="sbSet">GAME 1</div>
+      <div class="sb-vs">VS</div>
+      <div class="sb-games-row">
+        <div id="pgames"></div>
+      </div>
+      <div class="sb-games-row">
+        <div id="cgames"></div>
+      </div>
+    </div>
+    <div class="sb-player">
+      <div class="sb-skin">🤖</div>
+      <div class="sb-name">CPU</div>
+      <div class="sb-pts" id="sbCpuPts">0</div>
+      <div class="sb-games">pts</div>
+    </div>
   </div>
 
-  <div class="log" id="log"></div>
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="tennis" width="600" height="380"></canvas>
+    <div id="msgOverlay">GET READY!</div>
+  </div>
+  <div class="ctrl-hint">Move mouse up/down to control your paddle</div>
 </div>
 
 <!-- END -->
@@ -141,26 +152,66 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
   <div class="end-em" id="endEm">🏆</div>
   <div class="end-title" id="endTitle">YOU WIN!</div>
   <div class="end-sub" id="endSub"></div>
-  <div class="final-coins" id="finalCoins">150</div>
-  <div class="final-lbl">final coins</div>
-  <button class="end-btn" onclick="location.reload()">🔄 PLAY AGAIN</button>
+  <div class="end-coins" id="endCoins">150</div>
+  <div class="end-clbl">🪙 coins</div>
+  <div class="end-btns">
+    <button class="end-btn again" onclick="startMatch()">🎾 PLAY AGAIN</button>
+    <button class="end-btn" onclick="show('welcome')">🏠 MENU</button>
+  </div>
 </div>
 
 <script>
+// ===== SKINS =====
 var SKINS = [
   {e:'🧑',n:'Default'},{e:'👑',n:'King'},{e:'🤖',n:'Robot'},{e:'👾',n:'Alien'},
   {e:'🦊',n:'Fox'},   {e:'🐉',n:'Dragon'},{e:'🦸',n:'Hero'},{e:'🧙',n:'Wizard'}
 ];
-var DICE = ['⚀','⚁','⚂','⚃','⚄','⚅'];
 
+// ===== CANVAS =====
+var canvas, ctx, W, H;
+var RAF = null;
+
+// ===== GAME STATE =====
 var G = {
-  players: [],   // [{name, skin, coins, wins, isHuman}]
-  round: 1,
-  matchWins: 0,
-  matchLosses: 0,
-  busy: false
+  playerName: 'You',
+  playerSkin: '🧑',
+  coins: 100,
+  playerGames: 0,
+  cpuGames: 0,
+  playerPts: 0,
+  cpuPts: 0,
+  ball: {x:300, y:190, dx:0, dy:0},
+  playerY: 150,
+  cpuY: 150,
+  mouseY: 190,
+  running: false,
+  matchOver: false
 };
 
+var PW = 14, PH = 80, BR = 8;
+var PLAYER_X = 24, CPU_X = 0;
+
+function initCanvas() {
+  canvas = document.getElementById('tennis');
+  ctx = canvas.getContext('2d');
+  W = canvas.width;
+  H = canvas.height;
+  CPU_X = W - PLAYER_X - PW;
+
+  canvas.addEventListener('mousemove', function(e){
+    var rect = canvas.getBoundingClientRect();
+    var scaleY = H / rect.height;
+    G.mouseY = (e.clientY - rect.top) * scaleY;
+  });
+  canvas.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    var rect = canvas.getBoundingClientRect();
+    var scaleY = H / rect.height;
+    G.mouseY = (e.touches[0].clientY - rect.top) * scaleY;
+  }, {passive:false});
+}
+
+// ===== SETUP =====
 function buildSkinGrid() {
   var g = document.getElementById('skinGrid');
   g.innerHTML = '';
@@ -187,212 +238,244 @@ function getSelectedSkin() {
 function startGame() {
   var name = document.getElementById('nameInput').value.trim() || 'Player';
   var skin = getSelectedSkin();
-  G.players = [
-    {name: name,      skin: skin.e, coins: 100, wins: 0, isHuman: true},
-    {name: 'CPU Rex', skin: '🤖',   coins: 100, wins: 0, isHuman: false},
-    {name: 'CPU Max', skin: '🦊',   coins: 100, wins: 0, isHuman: false}
-  ];
-  G.round = 1;
-  G.matchWins = 0;
-  G.matchLosses = 0;
-  G.busy = false;
+  G.playerName = name;
+  G.playerSkin = skin.e;
+  G.coins = 100;
+  document.getElementById('sbPlayerSkin').textContent = skin.e;
+  document.getElementById('sbPlayerName').textContent = name;
+  document.getElementById('coinDisplay').textContent = G.coins;
   show('game');
-  renderWinsRow();
-  renderFighters();
-  document.getElementById('roundBadge').textContent = 'ROUND 1';
-  document.getElementById('resultMsg').textContent = '';
-  document.getElementById('coinsChange').textContent = '';
-  document.getElementById('rollBtn').disabled = false;
-  document.getElementById('log').innerHTML = '';
-  addLog('Match started! Roll the dice — highest roll wins the round.');
+  initCanvas();
+  startMatch();
 }
 
-function renderWinsRow() {
-  var row = document.getElementById('winsRow');
-  row.innerHTML = '';
-  G.players.forEach(function(p,i){
-    var card = document.createElement('div');
-    card.className = 'wins-card'+(i===0?' active':'');
-    card.id = 'wcard_'+i;
-    var dots = '';
-    for(var d=0;d<3;d++){
-      dots += '<div class="win-dot'+(d<p.wins?' filled':'')+'">'+( d<p.wins?'★':'' )+'</div>';
-    }
-    card.innerHTML = '<div class="wc-skin">'+p.skin+'</div><div class="wc-name">'+p.name+'</div><div class="wc-wins">'+dots+'</div>';
-    row.appendChild(card);
-  });
-  document.getElementById('coinDisplay').textContent = G.players[0].coins;
+function startMatch() {
+  G.playerGames = 0;
+  G.cpuGames = 0;
+  G.playerPts = 0;
+  G.cpuPts = 0;
+  G.matchOver = false;
+  updateScoreboard();
+  serveBall(1);
 }
 
-function renderFighters() {
-  var f = document.getElementById('fighters');
-  f.innerHTML = '';
-  G.players.forEach(function(p,i){
-    if(i>0){ var vs=document.createElement('div'); vs.className='vs'; vs.textContent='VS'; f.appendChild(vs); }
-    var div = document.createElement('div');
-    div.className = 'fighter';
-    div.id = 'fighter_'+i;
-    div.innerHTML = '<div class="f-skin">'+p.skin+'</div><div class="f-name">'+p.name+'</div><div class="f-roll" id="roll_'+i+'">🎲</div>';
-    f.appendChild(div);
-  });
+function serveBall(dir) {
+  G.ball.x = W / 2;
+  G.ball.y = H / 2 + (Math.random()-0.5)*80;
+  var spd = 5 + Math.random()*2;
+  G.ball.dx = dir * spd;
+  G.ball.dy = (Math.random()-0.5)*5;
+  G.playerY = H/2 - PH/2;
+  G.cpuY = H/2 - PH/2;
+  G.running = false;
+
+  setMsg('GET READY...');
+  setTimeout(function(){
+    setMsg('');
+    G.running = true;
+    if(!RAF) loop();
+  }, 1200);
 }
 
-function doRoll() {
-  if(G.busy) return;
-  G.busy = true;
-  document.getElementById('rollBtn').disabled = true;
-  document.getElementById('resultMsg').textContent = '';
-  document.getElementById('coinsChange').textContent = '';
-
-  // Animate dice for all players
-  var rolls = 0;
-  var finalVals = G.players.map(function(){ return Math.floor(Math.random()*6)+1; });
-  var timer = setInterval(function(){
-    G.players.forEach(function(p,i){
-      document.getElementById('roll_'+i).textContent = DICE[Math.floor(Math.random()*6)];
-    });
-    rolls++;
-    if(rolls >= 10){
-      clearInterval(timer);
-      G.players.forEach(function(p,i){
-        document.getElementById('roll_'+i).textContent = DICE[finalVals[i]-1];
-      });
-      setTimeout(function(){ resolveRound(finalVals); }, 400);
-    }
-  }, 80);
+// ===== GAME LOOP =====
+function loop() {
+  update();
+  draw();
+  RAF = requestAnimationFrame(loop);
 }
 
-function resolveRound(vals) {
-  var maxVal = Math.max.apply(null, vals);
-  var winners = [];
-  vals.forEach(function(v,i){ if(v===maxVal) winners.push(i); });
-  var humanWon = winners.indexOf(0) !== -1;
-  var tie = winners.length > 1;
+function update() {
+  if(!G.running) return;
 
-  // Highlight winner
-  winners.forEach(function(i){
-    document.getElementById('roll_'+i).classList.add('winner');
-  });
+  // Move player paddle toward mouse
+  var targetY = G.mouseY - PH/2;
+  targetY = Math.max(20, Math.min(H-PH-20, targetY));
+  G.playerY += (targetY - G.playerY) * 0.25;
 
-  // Log
-  var logParts = G.players.map(function(p,i){ return p.name+' rolled '+vals[i]; });
-  addLog('Round '+G.round+': '+logParts.join(' | '));
+  // CPU AI
+  var cpuCenter = G.cpuY + PH/2;
+  var cpuSpeed = 3.8;
+  if(cpuCenter < G.ball.y - 8) G.cpuY += cpuSpeed;
+  else if(cpuCenter > G.ball.y + 8) G.cpuY -= cpuSpeed;
+  G.cpuY = Math.max(20, Math.min(H-PH-20, G.cpuY));
 
-  var resultEl = document.getElementById('resultMsg');
-  var changeEl = document.getElementById('coinsChange');
+  // Move ball
+  G.ball.x += G.ball.dx;
+  G.ball.y += G.ball.dy;
 
-  if(tie){
-    resultEl.textContent = '🤝 TIE — No coins change!';
-    resultEl.className = 'result-msg tie';
-    changeEl.textContent = '';
-    addLog('It\'s a tie! No coins awarded.');
-  } else if(humanWon){
-    G.players[0].wins++;
-    resultEl.textContent = '🏆 YOU WIN THIS ROUND!';
-    resultEl.className = 'result-msg win';
-    changeEl.textContent = '';
-    addLog('You win round '+G.round+'! ⭐ '+G.players[0].wins+'/3 wins');
-  } else {
-    var cpuWinner = G.players[winners[0]];
-    cpuWinner.wins++;
-    resultEl.textContent = '❌ '+cpuWinner.name.toUpperCase()+' WINS THIS ROUND!';
-    resultEl.className = 'result-msg lose';
-    changeEl.textContent = '';
-    addLog(cpuWinner.name+' wins round '+G.round+'! ⭐ '+cpuWinner.wins+'/3 wins');
+  // Top/bottom wall bounce
+  if(G.ball.y - BR <= 20){G.ball.dy = Math.abs(G.ball.dy); G.ball.y = BR+20;}
+  if(G.ball.y + BR >= H-20){G.ball.dy = -Math.abs(G.ball.dy); G.ball.y = H-BR-20;}
+
+  // Player paddle hit
+  if(G.ball.dx < 0 &&
+     G.ball.x - BR <= PLAYER_X + PW &&
+     G.ball.x + BR >= PLAYER_X &&
+     G.ball.y >= G.playerY - 4 &&
+     G.ball.y <= G.playerY + PH + 4) {
+    G.ball.x = PLAYER_X + PW + BR;
+    var rel = (G.ball.y - G.playerY) / PH - 0.5;
+    var spd = Math.min(Math.abs(G.ball.dx)*1.05, 13);
+    G.ball.dx = spd;
+    G.ball.dy = rel * 9;
   }
 
-  renderWinsRow();
-
-  // Check if anyone reached 3 wins
-  var matchWinner = null;
-  G.players.forEach(function(p){ if(p.wins >= 3 && !matchWinner) matchWinner = p; });
-
-  setTimeout(function(){
-    if(matchWinner){
-      endMatch(matchWinner);
-    } else {
-      G.round++;
-      document.getElementById('roundBadge').textContent = 'ROUND '+G.round;
-      // Clear roll displays
-      G.players.forEach(function(p,i){
-        var r = document.getElementById('roll_'+i);
-        r.textContent = '🎲';
-        r.classList.remove('winner');
-      });
-      resultEl.textContent = '';
-      changeEl.textContent = '';
-      G.busy = false;
-      document.getElementById('rollBtn').disabled = false;
-    }
-  }, 1800);
-}
-
-function endMatch(winner) {
-  var human = G.players[0];
-  var humanWon = winner.isHuman;
-
-  if(humanWon){
-    human.coins += 50;
-    G.matchWins++;
-    addLog('🏆 YOU WIN THE MATCH! +50 coins! Total: '+human.coins);
-    document.getElementById('resultMsg').textContent = '🏆 MATCH WIN! +50 coins!';
-    document.getElementById('resultMsg').className = 'result-msg win';
-    document.getElementById('coinsChange').textContent = '+50 coins added!';
-    document.getElementById('coinsChange').className = 'coins-change pos';
-  } else {
-    human.coins = Math.max(0, human.coins - 50);
-    G.matchLosses++;
-    addLog('😔 '+winner.name+' wins the match! -50 coins. Total: '+human.coins);
-    document.getElementById('resultMsg').textContent = '😔 MATCH LOST! -50 coins!';
-    document.getElementById('resultMsg').className = 'result-msg lose';
-    document.getElementById('coinsChange').textContent = '-50 coins lost!';
-    document.getElementById('coinsChange').className = 'coins-change neg';
+  // CPU paddle hit
+  if(G.ball.dx > 0 &&
+     G.ball.x + BR >= CPU_X &&
+     G.ball.x - BR <= CPU_X + PW &&
+     G.ball.y >= G.cpuY - 4 &&
+     G.ball.y <= G.cpuY + PH + 4) {
+    G.ball.x = CPU_X - BR;
+    var rel = (G.ball.y - G.cpuY) / PH - 0.5;
+    var spd = Math.min(Math.abs(G.ball.dx)*1.05, 13);
+    G.ball.dx = -spd;
+    G.ball.dy = rel * 9;
   }
 
-  document.getElementById('coinDisplay').textContent = human.coins;
+  // Scoring
+  if(G.ball.x < -20) { scorePoint('cpu'); }
+  else if(G.ball.x > W+20) { scorePoint('player'); }
+}
 
-  // Check win/lose game condition
+function scorePoint(who) {
+  G.running = false;
+  if(who === 'player') {
+    G.playerPts++;
+    setMsg('YOUR POINT! 🎾');
+  } else {
+    G.cpuPts++;
+    setMsg('CPU POINT! 🤖');
+  }
+  updateScoreboard();
+
   setTimeout(function(){
-    if(human.coins <= 0){
-      showEnd(false, 'You ran out of coins! Game over.');
-    } else if(humanWon && G.matchWins >= 3){
-      showEnd(true, 'You won 3 matches! You are the Coin Rush Champion!');
+    if(G.playerPts >= 5) {
+      G.playerGames++;
+      G.playerPts = 0; G.cpuPts = 0;
+      updateScoreboard();
+      if(G.playerGames >= 3) { endMatch(true); return; }
+      setMsg('YOU WIN GAME '+G.playerGames+'! 🏆');
+      setTimeout(function(){ serveBall(1); }, 1600);
+    } else if(G.cpuPts >= 5) {
+      G.cpuGames++;
+      G.playerPts = 0; G.cpuPts = 0;
+      updateScoreboard();
+      if(G.cpuGames >= 3) { endMatch(false); return; }
+      setMsg('CPU WINS GAME '+G.cpuGames+'! 🤖');
+      setTimeout(function(){ serveBall(-1); }, 1600);
     } else {
-      // Start next match
-      addLog('--- New match starting! ---');
-      G.players.forEach(function(p){ p.wins = 0; });
-      G.round = 1;
-      document.getElementById('roundBadge').textContent = 'ROUND 1';
-      G.players.forEach(function(p,i){
-        var r = document.getElementById('roll_'+i);
-        if(r){ r.textContent='🎲'; r.classList.remove('winner'); }
-      });
-      document.getElementById('resultMsg').textContent = '';
-      document.getElementById('coinsChange').textContent = '';
-      renderWinsRow();
-      G.busy = false;
-      document.getElementById('rollBtn').disabled = false;
+      setTimeout(function(){ serveBall(who==='player'?-1:1); }, 900);
     }
-  }, 2200);
+  }, 600);
 }
 
-function showEnd(won, msg) {
-  var human = G.players[0];
-  document.getElementById('endEm').textContent = won ? '🏆' : '😔';
-  document.getElementById('endTitle').textContent = won ? 'YOU WIN!' : 'GAME OVER';
-  document.getElementById('endTitle').className = 'end-title '+(won?'win':'lose');
-  document.getElementById('endSub').textContent = msg;
-  document.getElementById('finalCoins').textContent = human.coins;
-  show('end');
+function endMatch(playerWon) {
+  G.matchOver = true;
+  cancelAnimationFrame(RAF); RAF = null;
+  if(playerWon){
+    G.coins += 50;
+    setMsg('🏆 YOU WIN THE MATCH!');
+  } else {
+    G.coins = Math.max(0, G.coins - 50);
+    setMsg('😔 CPU WINS THE MATCH!');
+  }
+  document.getElementById('coinDisplay').textContent = G.coins;
+  setTimeout(function(){
+    document.getElementById('endEm').textContent = playerWon ? '🏆' : '😔';
+    var t = document.getElementById('endTitle');
+    t.textContent = playerWon ? 'YOU WIN!' : 'YOU LOSE!';
+    t.className = 'end-title '+(playerWon?'win':'lose');
+    document.getElementById('endSub').textContent = playerWon
+      ? 'Great match! +50 coins added to your total.'
+      : 'CPU wins this time. -50 coins. Try again!';
+    document.getElementById('endCoins').textContent = G.coins;
+    show('end');
+  }, 2000);
 }
 
-function addLog(msg) {
-  var box = document.getElementById('log');
-  var d = document.createElement('div');
-  d.className = 'log-line';
-  d.textContent = msg;
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
+// ===== DRAW =====
+function draw() {
+  // Court
+  ctx.fillStyle = '#2d6a2d';
+  ctx.fillRect(0, 0, W, H);
+
+  // Court lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(20, 20, W-40, H-40);
+
+  // Service boxes
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.beginPath(); ctx.moveTo(W*0.3,20); ctx.lineTo(W*0.3,H-20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W*0.7,20); ctx.lineTo(W*0.7,H-20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W*0.3,H/2); ctx.lineTo(W*0.7,H/2); ctx.stroke();
+
+  // Net
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([6,5]);
+  ctx.beginPath(); ctx.moveTo(W/2,20); ctx.lineTo(W/2,H-20); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillRect(W/2-3, H/2-6, 6, 12);
+
+  // Paddles
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(255,255,255,0.5)';
+  ctx.shadowBlur = 8;
+  roundRect(PLAYER_X, G.playerY, PW, PH, 4);
+  roundRect(CPU_X, G.cpuY, PW, PH, 4);
+  ctx.shadowBlur = 0;
+
+  // Skin labels on paddles
+  ctx.font = '14px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(G.playerSkin, PLAYER_X + PW/2, G.playerY - 4);
+  ctx.fillText('🤖', CPU_X + PW/2, G.cpuY - 4);
+
+  // Ball
+  ctx.fillStyle = '#c8ff00';
+  ctx.shadowColor = '#c8ff00';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(G.ball.x, G.ball.y, BR, 0, Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);
+  ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ===== UI =====
+function updateScoreboard() {
+  document.getElementById('sbPlayerPts').textContent = G.playerPts;
+  document.getElementById('sbCpuPts').textContent = G.cpuPts;
+  document.getElementById('sbSet').textContent = 'GAME '+(G.playerGames+G.cpuGames+1);
+
+  var pg = ''; for(var i=0;i<3;i++) pg+='<div class="game-dot'+(i<G.playerGames?' won':'')+'">'+( i<G.playerGames?'✓':'' )+'</div>';
+  var cg = ''; for(var i=0;i<3;i++) cg+='<div class="game-dot'+(i<G.cpuGames?' won':'')+'">'+( i<G.cpuGames?'✓':'' )+'</div>';
+  document.getElementById('pgames').innerHTML = pg;
+  document.getElementById('cgames').innerHTML = cg;
+}
+
+function setMsg(msg) {
+  var el = document.getElementById('msgOverlay');
+  el.textContent = msg;
+  el.classList.toggle('hide', msg==='');
 }
 
 function show(id) {
@@ -401,19 +484,20 @@ function show(id) {
   });
 }
 
+// ===== INIT =====
 window.addEventListener('DOMContentLoaded', function(){
   buildSkinGrid();
   document.getElementById('nameInput').addEventListener('keydown', function(e){
     if(e.key==='Enter') startGame();
   });
   try {
-    new QRCode(document.getElementById('qrcode'), {
-      text: 'https://wrcarpenter2018.github.io/coins',
-      width: 128, height: 128,
-      colorDark: '#FFD700', colorLight: '#0a0a1a',
-      correctLevel: QRCode.CorrectLevel.M
+    new QRCode(document.getElementById('qrcode'),{
+      text:'https://wrcarpenter2018.github.io/coins',
+      width:120, height:120,
+      colorDark:'#4caf50', colorLight:'#0a0a1a',
+      correctLevel:QRCode.CorrectLevel.M
     });
-  } catch(e) { console.log('QR error', e); }
+  } catch(e){ console.log('QR',e); }
 });
 </script>
 </body>
