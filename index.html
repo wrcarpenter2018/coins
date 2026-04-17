@@ -19,7 +19,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 .lbl{font-size:11px;letter-spacing:3px;color:#4caf50;text-transform:uppercase;margin-bottom:10px;text-align:center}
 #nameInput{width:100%;padding:13px;font-size:17px;font-family:inherit;font-weight:bold;background:rgba(255,255,255,.08);border:2px solid rgba(76,175,80,.5);border-radius:10px;color:#fff;text-align:center;margin-bottom:18px;outline:none}
 #nameInput:focus{border-color:#4caf50}
-.skin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.skin-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
 .skin-btn{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 6px;cursor:pointer;font-size:26px;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
 .skin-btn span{font-size:9px;color:#888;font-family:Arial,sans-serif;font-weight:bold;letter-spacing:1px;text-transform:uppercase}
 .skin-btn:hover{border-color:#4caf50;transform:translateY(-2px)}
@@ -133,8 +133,8 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
       </div>
     </div>
     <div class="sb-player">
-      <div class="sb-skin">🤖</div>
-      <div class="sb-name">CPU</div>
+      <div class="sb-skin" id="sbCpuSkin">🇪🇸</div>
+      <div class="sb-name" id="sbCpuName">Nadal</div>
       <div class="sb-pts" id="sbCpuPts">0</div>
       <div class="sb-games">pts</div>
     </div>
@@ -163,8 +163,11 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 <script>
 // ===== SKINS =====
 var SKINS = [
-  {e:'🧑',n:'Default'},{e:'👑',n:'King'},{e:'🤖',n:'Robot'},{e:'👾',n:'Alien'},
-  {e:'🦊',n:'Fox'},   {e:'🐉',n:'Dragon'},{e:'🦸',n:'Hero'},{e:'🧙',n:'Wizard'}
+  {e:'🇨🇭',n:'Federer',  frame:'#c8102e',grip:'#8b0000',accent:'#ffffff'},
+  {e:'🇪🇸',n:'Nadal',    frame:'#c60b1e',grip:'#f1bf00',accent:'#ffd700'},
+  {e:'🇷🇸',n:'Djokovic', frame:'#0033a0',grip:'#c6363c',accent:'#88aaff'},
+  {e:'🇨🇿',n:'Lendl',    frame:'#d7141a',grip:'#003087',accent:'#ffffff'},
+  {e:'🇬🇧',n:'Murray',   frame:'#012169',grip:'#c8102e',accent:'#88aaff'}
 ];
 
 // ===== CANVAS =====
@@ -174,7 +177,8 @@ var RAF = null;
 // ===== GAME STATE =====
 var G = {
   playerName: 'You',
-  playerSkin: '🧑',
+  playerSkin: SKINS[0],
+  cpuSkin: SKINS[1],
   coins: 100,
   playerGames: 0,
   cpuGames: 0,
@@ -242,10 +246,10 @@ function startGame() {
   var name = document.getElementById('nameInput').value.trim() || 'Player';
   var skin = getSelectedSkin();
   G.playerName = name;
-  G.playerSkin = skin.e;
+  G.playerSkin = skin;
   G.coins = 100;
   document.getElementById('sbPlayerSkin').textContent = skin.e;
-  document.getElementById('sbPlayerName').textContent = name;
+  document.getElementById('sbPlayerName').textContent = skin.n;
   document.getElementById('coinDisplay').textContent = G.coins;
   show('game');
   initCanvas();
@@ -261,6 +265,11 @@ function startMatch() {
   G.matchOver = false;
   G.cpuMissDecided = false;
   G.cpuMissing = false;
+  // Pick a random CPU opponent different from the player
+  var opts = SKINS.filter(function(s){ return s.n !== G.playerSkin.n; });
+  G.cpuSkin = opts[Math.floor(Math.random() * opts.length)];
+  document.getElementById('sbCpuSkin').textContent = G.cpuSkin.e;
+  document.getElementById('sbCpuName').textContent = G.cpuSkin.n;
   show('game');
   if(!canvas) initCanvas();
   updateScoreboard();
@@ -456,9 +465,9 @@ function draw() {
   ctx.fillRect(W/2-3, H/2-6, 6, 12);
 
   // Player racket (left side)
-  drawRacket(PLAYER_X, G.playerY, PW, PH, '#3399ff', '#1a66cc', G.playerSkin);
+  drawRacket(PLAYER_X, G.playerY, PW, PH, G.playerSkin.frame, G.playerSkin.grip, G.playerSkin.e);
   // CPU racket (right side, mirrored)
-  drawRacket(CPU_X, G.cpuY, PW, PH, '#ff4444', '#cc1111', '🤖');
+  drawRacket(CPU_X, G.cpuY, PW, PH, G.cpuSkin.frame, G.cpuSkin.grip, G.cpuSkin.e);
 
   // Ball
   ctx.fillStyle = '#c8ff00';
