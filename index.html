@@ -298,7 +298,7 @@ function update() {
   // CPU AI — 75% player win rate: CPU misses 25% of shots
   if(G.ball.dx > 0 && !G.cpuMissDecided) {
     G.cpuMissDecided = true;
-    G.cpuMissing = Math.random() < 0.25;
+    G.cpuMissing = Math.random() < 0.90;
     G.cpuMissTarget = G.cpuMissing
       ? (G.ball.y < H/2 ? H - PH - 20 : 20)
       : null;
