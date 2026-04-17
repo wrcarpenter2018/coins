@@ -253,12 +253,18 @@ function startGame() {
 }
 
 function startMatch() {
+  if(RAF){ cancelAnimationFrame(RAF); RAF = null; }
   G.playerGames = 0;
   G.cpuGames = 0;
   G.playerPts = 0;
   G.cpuPts = 0;
   G.matchOver = false;
+  G.cpuMissDecided = false;
+  G.cpuMissing = false;
+  show('game');
+  if(!canvas) initCanvas();
   updateScoreboard();
+  document.getElementById('coinDisplay').textContent = G.coins;
   serveBall(1);
 }
 
