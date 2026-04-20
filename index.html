@@ -199,7 +199,7 @@ var G = {
 };
 
 var PW = 14, PH = 80, BR = 8;
-var PLAYER_X = 24, CPU_X = 0;
+var PLAYER_X = 42, CPU_X = 0;
 var CROWD = [];
 
 function initCrowd() {
@@ -529,7 +529,7 @@ function drawPlayer(x, y, w, h, skin, facingRight) {
   var cy = y + h/2;
 
   // Body circle — sits behind the paddle on the baseline side
-  var bx = facingRight ? 16 : W - 16;
+  var bx = facingRight ? cx - 32 : cx + 32;
   var bodyR = 12;
 
   // Drop shadow under body
