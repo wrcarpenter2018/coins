@@ -152,6 +152,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="lbl">Choose Your Skin</div>
     <div class="skin-grid" id="skinGrid"></div>
     <button id="startBtn" onclick="startGame()">🎾 PLAY TENNIS</button>
+    <button onclick="startMysteryBattle()" style="width:100%;margin-top:6px;padding:9px;font-size:13px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#b8006e,#6a0080);border:none;border-radius:10px;color:#fff;cursor:pointer">🎭 MYSTERY BATTLE</button>
     <button id="vaultBtn" onclick="openVault()" style="width:100%;margin-top:6px;padding:9px;font-size:13px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#7b2ff7,#4a00b4);border:none;border-radius:10px;color:#fff;cursor:pointer">🏦 MY VAULT</button>
     <div class="rules">
       <b>HOW TO PLAY</b><br>
@@ -214,6 +215,11 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
   <div class="end-em" id="endEm">🏆</div>
   <div class="end-title" id="endTitle">YOU WIN!</div>
   <div class="end-sub" id="endSub"></div>
+  <div id="endReveal" style="display:none;margin:10px 0;padding:14px 20px;background:rgba(255,215,0,.1);border:2px solid #FFD700;border-radius:14px;text-align:center">
+    <div style="font-size:11px;letter-spacing:3px;color:#FFD700;font-weight:900;margin-bottom:6px">NEW SKIN UNLOCKED</div>
+    <div id="revealSkin" style="font-size:52px"></div>
+    <div id="revealName" style="font-size:16px;font-weight:900;color:#fff;margin-top:4px"></div>
+  </div>
   <div class="end-coins" id="endCoins">150</div>
   <div class="end-clbl">🪙 coins</div>
   <div class="end-btns">
@@ -307,6 +313,22 @@ function loadUpgrades() {
       }
     }
   } catch(e){}
+}
+
+// ===== WON SKINS (mystery battle unlocks) =====
+var WON_SKINS = {}; // {skinIndex: true}
+function saveWonSkins() {
+  try { localStorage.setItem('lfo_won', JSON.stringify(WON_SKINS)); } catch(e){}
+}
+function loadWonSkins() {
+  try {
+    var v = JSON.parse(localStorage.getItem('lfo_won'));
+    if(v && typeof v === 'object') WON_SKINS = v;
+  } catch(e){}
+}
+function isSkinUnlocked(idx) {
+  var s = SKINS[idx];
+  return s.unlock === 0 || G.coins >= s.unlock || WON_SKINS[idx];
 }
 
 function getVal(key) {
@@ -415,7 +437,9 @@ var G = {
   matchOver: false,
   cpuMissDecided: false,
   cpuMissing: false,
-  cpuMissTarget: null
+  cpuMissTarget: null,
+  mysteryBattle: false,
+  mysterySkinIdx: -1
 };
 
 var PW = 14, PH = 80, BR = 8;
@@ -461,7 +485,7 @@ function buildSkinGrid() {
   g.innerHTML = '';
   var firstUnlockedSet = false;
   SKINS.forEach(function(s,i){
-    var locked = s.unlock > 0 && G.coins < s.unlock;
+    var locked = !isSkinUnlocked(i);
     var b = document.createElement('button');
     b.id = 'sk_'+i;
     if(locked) {
@@ -491,9 +515,30 @@ function getSelectedSkin() {
 }
 
 function goToMenu() {
+  G.mysteryBattle = false;
   saveCoins();
   buildSkinGrid();
   show('welcome');
+}
+
+function startMysteryBattle() {
+  var name = document.getElementById('nameInput').value.trim() || 'Player';
+  var skin = getSelectedSkin();
+  G.playerName = name;
+  G.playerSkin = skin;
+  // Pick a random CPU (any skin except player's)
+  var pool = [];
+  for(var i=0;i<SKINS.length;i++){ if(SKINS[i].n !== skin.n) pool.push(i); }
+  var idx = pool[Math.floor(Math.random() * pool.length)];
+  G.cpuSkin = SKINS[idx];
+  G.mysteryBattle = true;
+  G.mysterySkinIdx = idx;
+  document.getElementById('sbPlayerSkin').textContent = skin.e;
+  document.getElementById('sbPlayerName').textContent = skin.n;
+  document.getElementById('coinDisplay').textContent = G.coins;
+  show('game');
+  initCanvas();
+  startMatch();
 }
 
 function startGame() {
@@ -518,11 +563,12 @@ function startMatch() {
   G.matchOver = false;
   G.cpuMissDecided = false;
   G.cpuMissing = false;
-  // Pick a random CPU opponent different from the player
-  var opts = SKINS.filter(function(s){ return s.n !== G.playerSkin.n; });
-  G.cpuSkin = opts[Math.floor(Math.random() * opts.length)];
-  document.getElementById('sbCpuSkin').textContent = G.cpuSkin.e;
-  document.getElementById('sbCpuName').textContent = G.cpuSkin.n;
+  if(!G.mysteryBattle) {
+    var opts = SKINS.filter(function(s){ return s.n !== G.playerSkin.n; });
+    G.cpuSkin = opts[Math.floor(Math.random() * opts.length)];
+  }
+  document.getElementById('sbCpuSkin').textContent = G.mysteryBattle ? '🎭' : G.cpuSkin.e;
+  document.getElementById('sbCpuName').textContent = G.mysteryBattle ? '???' : G.cpuSkin.n;
   show('game');
   if(!canvas) initCanvas();
   updateScoreboard();
@@ -666,6 +712,18 @@ function endMatch(playerWon) {
   setTimeout(function(){
     var grandWin = G.coins >= 1000;
     var brokeOut = G.coins <= 0;
+    var mysteryWin = G.mysteryBattle && playerWon;
+    var reveal = document.getElementById('endReveal');
+    reveal.style.display = 'none';
+    if(mysteryWin) {
+      WON_SKINS[G.mysterySkinIdx] = true;
+      saveWonSkins();
+      buildSkinGrid();
+      reveal.style.display = 'block';
+      document.getElementById('revealSkin').textContent = G.cpuSkin.e;
+      document.getElementById('revealName').textContent = G.cpuSkin.n + ' UNLOCKED!';
+    }
+    G.mysteryBattle = false;
     document.getElementById('endEm').textContent = grandWin ? '💎' : playerWon ? '🏆' : brokeOut ? '💸' : '😔';
     var t = document.getElementById('endTitle');
     t.className = 'end-title '+(grandWin||playerWon?'win':'lose');
@@ -675,6 +733,9 @@ function endMatch(playerWon) {
     } else if(brokeOut){
       t.textContent = 'BROKE!';
       document.getElementById('endSub').textContent = 'You ran out of coins! Better luck next time.';
+    } else if(mysteryWin){
+      t.textContent = 'MYSTERY SOLVED!';
+      document.getElementById('endSub').textContent = 'You defeated the mystery player! New skin unlocked! +50 coins.';
     } else if(playerWon){
       t.textContent = 'MATCH WIN!';
       document.getElementById('endSub').textContent = 'Great match! +50 coins. Keep playing to reach 1000!';
@@ -683,7 +744,6 @@ function endMatch(playerWon) {
       document.getElementById('endSub').textContent = 'CPU wins this time. -50 coins. Reach 1000 coins to win!';
     }
     document.getElementById('endCoins').textContent = G.coins;
-    // Hide play again if game is truly over (grand win or broke)
     var btns = document.querySelector('.end-btns');
     btns.innerHTML = grandWin || brokeOut
       ? '<button class="end-btn again" onclick="location.reload()">🔄 NEW GAME</button>'
@@ -1012,6 +1072,7 @@ function nextTriviaQ() {
 window.addEventListener('DOMContentLoaded', function(){
   G.coins = loadCoins();
   loadUpgrades();
+  loadWonSkins();
   G.playerSkin = SKINS[0];
   buildSkinGrid();
   document.getElementById('nameInput').addEventListener('keydown', function(e){
