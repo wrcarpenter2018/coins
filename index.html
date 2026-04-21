@@ -112,6 +112,25 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 .trivia-feedback.bad{color:#ff4444}
 .trivia-next-btn{width:100%;padding:14px;font-size:15px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#4caf50,#2e7d32);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .2s}
 .trivia-next-btn:hover{transform:translateY(-2px)}
+
+/* UPGRADES */
+#upgrades{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at top,#0b1a30,#0a0a1a)}
+.upg-header{text-align:center;margin-bottom:20px}
+.upg-title{font-size:28px;font-weight:900;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.upg-coins{font-size:16px;color:#FFD700;font-weight:900;margin-top:4px}
+.upg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;width:100%;margin-bottom:20px}
+.upg-card{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 12px;text-align:center;transition:border-color .2s}
+.upg-card.maxed{border-color:rgba(255,215,0,.4);background:rgba(255,215,0,.06)}
+.upg-icon{font-size:32px;margin-bottom:4px}
+.upg-name{font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.upg-desc{font-size:10px;color:#666;margin-bottom:8px}
+.upg-dots{display:flex;justify-content:center;gap:5px;margin-bottom:8px}
+.upg-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s}
+.upg-dot.filled{background:#4caf50}
+.upg-cost{font-size:11px;color:#FFD700;font-weight:900;margin-bottom:8px;min-height:16px}
+.upg-btn{width:100%;padding:8px;font-size:11px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:1px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;transition:all .2s}
+.upg-btn:disabled{background:rgba(255,255,255,.1);color:#555;cursor:not-allowed}
+.upg-btn.maxed-btn{background:linear-gradient(135deg,#FFD700,#FF8C00);color:#000}
 </style>
 </head>
 <body>
@@ -214,10 +233,21 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="trivia-unlock-title" id="triviaUnlockTitle">🔒 Tennis Trivia</div>
     <div class="trivia-unlock-sub" id="triviaUnlockSub">Reach 500 coins to unlock!</div>
   </div>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
     <button class="end-btn" onclick="goToMenu()">🏠 MENU</button>
-    <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4">🧠 PLAY TRIVIA</button>
+    <button class="end-btn again" onclick="openUpgrades()">⚡ UPGRADES</button>
+    <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4">🧠 TRIVIA</button>
   </div>
+</div>
+
+<!-- UPGRADES -->
+<div id="upgrades" class="hidden">
+  <div class="upg-header">
+    <div class="upg-title">⚡ UPGRADES</div>
+    <div class="upg-coins" id="upgCoinDisplay">🪙 100</div>
+  </div>
+  <div class="upg-grid" id="upgGrid"></div>
+  <button class="end-btn vault" onclick="openVault()">← BACK TO VAULT</button>
 </div>
 
 <!-- TRIVIA -->
@@ -241,11 +271,88 @@ var SKINS = [
   {e:'🇨🇿',n:'Lendl',    abbr:'IL',frame:'#d7141a',grip:'#003087', unlock:0},
   {e:'🇪🇸',n:'Alcaraz',  abbr:'CA',frame:'#00b4d8',grip:'#7209b7', unlock:0},
   {e:'🇮🇹',n:'Sinner',   abbr:'JS',frame:'#cc0000',grip:'#006400', unlock:0},
-  {e:'🇨🇭',n:'Federer',  abbr:'RF',frame:'#c8102e',grip:'#8b0000', unlock:300},
-  {e:'🇪🇸',n:'Nadal',    abbr:'RN',frame:'#c60b1e',grip:'#f1bf00', unlock:400},
-  {e:'🇷🇸',n:'Djokovic', abbr:'ND',frame:'#0033a0',grip:'#c6363c', unlock:600},
-  {e:'🇬🇧',n:'Murray',   abbr:'AM',frame:'#012169',grip:'#c8102e', unlock:700}
+  {e:'🇬🇧',n:'Murray',   abbr:'AM',frame:'#012169',grip:'#c8102e', unlock:300},
+  {e:'🇨🇭',n:'Federer',  abbr:'RF',frame:'#c8102e',grip:'#8b0000', unlock:400},
+  {e:'🇪🇸',n:'Nadal',    abbr:'RN',frame:'#c60b1e',grip:'#f1bf00', unlock:600},
+  {e:'🇷🇸',n:'Djokovic', abbr:'ND',frame:'#0033a0',grip:'#c6363c', unlock:700}
 ];
+
+// ===== UPGRADES =====
+var UPGRADE_DEFS = [
+  {key:'speed', icon:'⚡', name:'Speed',  desc:'Faster paddle response', costs:[50,100,200],
+   labels:['Quick','Fast','Lightning'], values:[0.25,0.34,0.44,0.55]},
+  {key:'power', icon:'💪', name:'Power',  desc:'Hit the ball harder',    costs:[50,100,200],
+   labels:['Strong','Powerful','Explosive'], values:[13,16,19,23]},
+  {key:'reach', icon:'📏', name:'Reach',  desc:'Larger paddle size',     costs:[75,150,300],
+   labels:['Long','Longer','Giant'], values:[80,94,108,124]},
+  {key:'spin',  icon:'🌀', name:'Spin',   desc:'More angle on your shots', costs:[50,100,200],
+   labels:['Spin','Topspin','Mega Spin'], values:[9,11,14,17]}
+];
+var UPGRADES = {speed:0, power:0, reach:0, spin:0};
+
+function saveUpgrades() {
+  try { localStorage.setItem('lfo_upgrades', JSON.stringify(UPGRADES)); } catch(e){}
+}
+function loadUpgrades() {
+  try {
+    var v = JSON.parse(localStorage.getItem('lfo_upgrades'));
+    if(v) UPGRADES = v;
+  } catch(e){}
+}
+
+function getPlayerPH() { return UPGRADE_DEFS[2].values[UPGRADES.reach]; }
+function getPlayerSpeed() { return UPGRADE_DEFS[0].values[UPGRADES.speed]; }
+function getPlayerPower() { return UPGRADE_DEFS[1].values[UPGRADES.power]; }
+function getPlayerSpin()  { return UPGRADE_DEFS[3].values[UPGRADES.spin]; }
+
+function openUpgrades() {
+  renderUpgrades();
+  show('upgrades');
+}
+
+function renderUpgrades() {
+  document.getElementById('upgCoinDisplay').textContent = '🪙 ' + G.coins;
+  var grid = document.getElementById('upgGrid');
+  grid.innerHTML = '';
+  UPGRADE_DEFS.forEach(function(def) {
+    var lvl = UPGRADES[def.key];
+    var maxed = lvl >= 3;
+    var cost = maxed ? 0 : def.costs[lvl];
+    var canAfford = G.coins >= cost;
+
+    var card = document.createElement('div');
+    card.className = 'upg-card' + (maxed ? ' maxed' : '');
+
+    var dots = '';
+    for(var d = 0; d < 3; d++)
+      dots += '<div class="upg-dot'+(d < lvl ? ' filled':'')+'"></div>';
+
+    card.innerHTML = '<div class="upg-icon">'+def.icon+'</div>'
+      +'<div class="upg-name">'+def.name+'</div>'
+      +'<div class="upg-desc">'+def.desc+'</div>'
+      +'<div class="upg-dots">'+dots+'</div>'
+      +'<div class="upg-cost">'+(maxed ? '✅ MAXED' : cost+' 🪙')+'</div>'
+      +'<button class="upg-btn'+(maxed?' maxed-btn':'')+'" '
+        +(maxed||!canAfford ? 'disabled' : '')
+        +' onclick="buyUpgrade(\''+def.key+'\')">'
+        +(maxed ? 'MAX LEVEL' : lvl===0 ? 'UNLOCK' : 'UPGRADE')
+      +'</button>';
+    grid.appendChild(card);
+  });
+}
+
+function buyUpgrade(key) {
+  var def = UPGRADE_DEFS.find(function(d){ return d.key===key; });
+  var lvl = UPGRADES[key];
+  if(lvl >= 3) return;
+  var cost = def.costs[lvl];
+  if(G.coins < cost) return;
+  G.coins -= cost;
+  UPGRADES[key]++;
+  saveCoins();
+  saveUpgrades();
+  renderUpgrades();
+}
 
 // ===== CANVAS =====
 var canvas, ctx, W, H;
@@ -413,9 +520,10 @@ function update() {
   if(!G.running) return;
 
   // Move player paddle toward mouse
-  var targetY = G.mouseY - PH/2;
-  targetY = Math.max(20, Math.min(H-PH-20, targetY));
-  G.playerY += (targetY - G.playerY) * 0.25;
+  var ePH = getPlayerPH();
+  var targetY = G.mouseY - ePH/2;
+  targetY = Math.max(20, Math.min(H-ePH-20, targetY));
+  G.playerY += (targetY - G.playerY) * getPlayerSpeed();
 
   // CPU AI — 75% player win rate: CPU misses 25% of shots
   if(G.ball.dx > 0 && !G.cpuMissDecided) {
@@ -446,12 +554,12 @@ function update() {
      G.ball.x - BR <= PLAYER_X + PW &&
      G.ball.x + BR >= PLAYER_X &&
      G.ball.y >= G.playerY - 4 &&
-     G.ball.y <= G.playerY + PH + 4) {
+     G.ball.y <= G.playerY + ePH + 4) {
     G.ball.x = PLAYER_X + PW + BR;
-    var rel = (G.ball.y - G.playerY) / PH - 0.5;
-    var spd = Math.min(Math.abs(G.ball.dx)*1.05, 13);
+    var rel = (G.ball.y - G.playerY) / ePH - 0.5;
+    var spd = Math.min(Math.abs(G.ball.dx)*1.05, getPlayerPower());
     G.ball.dx = spd;
-    G.ball.dy = rel * 9;
+    G.ball.dy = rel * getPlayerSpin();
   }
 
   // CPU paddle hit
@@ -601,7 +709,7 @@ function draw() {
   ctx.fillRect(W/2-3, H/2-6, 6, 12);
 
   // Player figure (left side, facing right)
-  drawPlayer(PLAYER_X, G.playerY, PW, PH, G.playerSkin, true);
+  drawPlayer(PLAYER_X, G.playerY, PW, getPlayerPH(), G.playerSkin, true);
   // CPU figure (right side, facing left)
   drawPlayer(CPU_X, G.cpuY, PW, PH, G.cpuSkin, false);
 
@@ -727,7 +835,7 @@ function setMsg(msg) {
 }
 
 function show(id) {
-  ['welcome','game','end','vault','trivia'].forEach(function(s){
+  ['welcome','game','end','vault','trivia','upgrades'].forEach(function(s){
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
 }
@@ -864,6 +972,7 @@ function nextTriviaQ() {
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', function(){
   G.coins = loadCoins();
+  loadUpgrades();
   G.playerSkin = SKINS[0];
   buildSkinGrid();
   document.getElementById('nameInput').addEventListener('keydown', function(e){
