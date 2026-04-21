@@ -24,6 +24,8 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 .skin-btn span{font-size:9px;color:#888;font-family:Arial,sans-serif;font-weight:bold;letter-spacing:1px;text-transform:uppercase}
 .skin-btn:hover{border-color:#4caf50;transform:translateY(-2px)}
 .skin-btn.sel{border-color:#4caf50;background:rgba(76,175,80,.15);box-shadow:0 0 12px rgba(76,175,80,.3)}
+.skin-btn.locked{opacity:.45;cursor:not-allowed;background:rgba(0,0,0,.2);border-color:rgba(255,255,255,.06)}
+.welcome-coins{text-align:center;margin-bottom:14px;font-size:13px;color:#FFD700;font-weight:900;letter-spacing:1px}
 #startBtn{width:100%;padding:15px;font-size:18px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:3px;background:linear-gradient(135deg,#4caf50,#2e7d32);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .2s}
 #startBtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(76,175,80,.4)}
 .rules{margin-top:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:10px;font-size:11px;color:#888;line-height:1.9;text-align:center}
@@ -120,6 +122,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
   <div class="logo-title">LEGENDS FACE OFF</div>
   <div class="logo-sub">Play to Win</div>
   <div class="box">
+    <div class="welcome-coins" id="welcomeCoins">🪙 100 coins</div>
     <div class="lbl">Your Name</div>
     <input type="text" id="nameInput" placeholder="Enter your name..." maxlength="16" />
     <div class="lbl">Choose Your Skin</div>
@@ -191,7 +194,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
   <div class="end-clbl">🪙 coins</div>
   <div class="end-btns">
     <button class="end-btn again" onclick="startMatch()">🎾 PLAY AGAIN</button>
-    <button class="end-btn" onclick="show('welcome')">🏠 MENU</button>
+    <button class="end-btn" onclick="goToMenu()">🏠 MENU</button>
   </div>
 </div>
 
@@ -203,12 +206,16 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
   <div class="vault-coins-lbl">🪙 Coins</div>
   <div class="vault-bar-wrap"><div class="vault-bar" id="vaultBar" style="width:10%"></div></div>
   <div class="vault-bar-lbl" id="vaultBarLbl">100 / 1000 coins to champion</div>
+  <div style="max-width:340px;width:100%;margin-bottom:16px;text-align:left">
+    <div style="font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:8px">LEGEND UNLOCKS</div>
+    <div id="unlockList"></div>
+  </div>
   <div class="trivia-unlock locked" id="triviaUnlock">
     <div class="trivia-unlock-title" id="triviaUnlockTitle">🔒 Tennis Trivia</div>
     <div class="trivia-unlock-sub" id="triviaUnlockSub">Reach 500 coins to unlock!</div>
   </div>
   <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <button class="end-btn" onclick="show('welcome')">🏠 MENU</button>
+    <button class="end-btn" onclick="goToMenu()">🏠 MENU</button>
     <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4">🧠 PLAY TRIVIA</button>
   </div>
 </div>
@@ -230,14 +237,14 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 <script>
 // ===== SKINS =====
 var SKINS = [
-  {e:'🇨🇭',n:'Federer',  abbr:'RF',frame:'#c8102e',grip:'#8b0000'},
-  {e:'🇪🇸',n:'Nadal',    abbr:'RN',frame:'#c60b1e',grip:'#f1bf00'},
-  {e:'🇷🇸',n:'Djokovic', abbr:'ND',frame:'#0033a0',grip:'#c6363c'},
-  {e:'🇨🇿',n:'Lendl',    abbr:'IL',frame:'#d7141a',grip:'#003087'},
-  {e:'🇬🇧',n:'Murray',   abbr:'AM',frame:'#012169',grip:'#c8102e'},
-  {e:'🇺🇸',n:'Agassi',   abbr:'AA',frame:'#ff6200',grip:'#cc0066'},
-  {e:'🇪🇸',n:'Alcaraz',  abbr:'CA',frame:'#00b4d8',grip:'#7209b7'},
-  {e:'🇮🇹',n:'Sinner',   abbr:'JS',frame:'#cc0000',grip:'#006400'}
+  {e:'🇺🇸',n:'Agassi',   abbr:'AA',frame:'#ff6200',grip:'#cc0066', unlock:0},
+  {e:'🇨🇿',n:'Lendl',    abbr:'IL',frame:'#d7141a',grip:'#003087', unlock:0},
+  {e:'🇪🇸',n:'Alcaraz',  abbr:'CA',frame:'#00b4d8',grip:'#7209b7', unlock:0},
+  {e:'🇮🇹',n:'Sinner',   abbr:'JS',frame:'#cc0000',grip:'#006400', unlock:0},
+  {e:'🇨🇭',n:'Federer',  abbr:'RF',frame:'#c8102e',grip:'#8b0000', unlock:300},
+  {e:'🇪🇸',n:'Nadal',    abbr:'RN',frame:'#c60b1e',grip:'#f1bf00', unlock:400},
+  {e:'🇷🇸',n:'Djokovic', abbr:'ND',frame:'#0033a0',grip:'#c6363c', unlock:600},
+  {e:'🇬🇧',n:'Murray',   abbr:'AM',frame:'#012169',grip:'#c8102e', unlock:700}
 ];
 
 // ===== CANVAS =====
@@ -306,17 +313,28 @@ function initCanvas() {
 function buildSkinGrid() {
   var g = document.getElementById('skinGrid');
   g.innerHTML = '';
+  var firstUnlockedSet = false;
   SKINS.forEach(function(s,i){
+    var locked = s.unlock > 0 && G.coins < s.unlock;
     var b = document.createElement('button');
-    b.className = 'skin-btn'+(i===0?' sel':'');
     b.id = 'sk_'+i;
-    b.innerHTML = s.e+'<span>'+s.n+'</span>';
-    b.onclick = function(){
-      document.querySelectorAll('.skin-btn').forEach(function(x){x.classList.remove('sel');});
-      b.classList.add('sel');
-    };
+    if(locked) {
+      b.className = 'skin-btn locked';
+      b.innerHTML = '🔒<span>'+s.unlock+'🪙</span>';
+      b.disabled = true;
+    } else {
+      var sel = !firstUnlockedSet ? ' sel' : '';
+      b.className = 'skin-btn'+sel;
+      if(!firstUnlockedSet) firstUnlockedSet = true;
+      b.innerHTML = s.e+'<span>'+s.n+'</span>';
+      b.onclick = function(){
+        document.querySelectorAll('.skin-btn').forEach(function(x){x.classList.remove('sel');});
+        b.classList.add('sel');
+      };
+    }
     g.appendChild(b);
   });
+  document.getElementById('welcomeCoins').textContent = '🪙 '+G.coins+' coins';
 }
 
 function getSelectedSkin() {
@@ -326,12 +344,17 @@ function getSelectedSkin() {
   return SKINS[0];
 }
 
+function goToMenu() {
+  saveCoins();
+  buildSkinGrid();
+  goToMenu();
+}
+
 function startGame() {
   var name = document.getElementById('nameInput').value.trim() || 'Player';
   var skin = getSelectedSkin();
   G.playerName = name;
   G.playerSkin = skin;
-  G.coins = 100;
   document.getElementById('sbPlayerSkin').textContent = skin.e;
   document.getElementById('sbPlayerName').textContent = skin.n;
   document.getElementById('coinDisplay').textContent = G.coins;
@@ -723,6 +746,16 @@ function openVault() {
   document.getElementById('vaultCoins').textContent = G.coins;
   document.getElementById('vaultBar').style.width = pct + '%';
   document.getElementById('vaultBarLbl').textContent = G.coins + ' / 1000 coins to champion';
+  var ul = document.getElementById('unlockList');
+  ul.innerHTML = '';
+  SKINS.filter(function(s){ return s.unlock > 0; }).forEach(function(s){
+    var done = G.coins >= s.unlock;
+    ul.innerHTML += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)">'
+      +'<span style="font-size:18px">'+(done ? s.e : '🔒')+'</span>'
+      +'<span style="font-size:12px;font-weight:900;color:'+(done?'#4caf50':'#888')+'">'+s.n+'</span>'
+      +'<span style="font-size:10px;color:#555;margin-left:auto">'+s.unlock+' 🪙 '+(done?'✓ UNLOCKED':'')+'</span>'
+      +'</div>';
+  });
   var unlocked = G.coins >= 500;
   document.getElementById('triviaUnlock').className = 'trivia-unlock' + (unlocked ? '' : ' locked');
   document.getElementById('triviaUnlockTitle').textContent = unlocked ? '🔓 Tennis Trivia — UNLOCKED!' : '🔒 Tennis Trivia';
@@ -831,6 +864,7 @@ function nextTriviaQ() {
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', function(){
   G.coins = loadCoins();
+  G.playerSkin = SKINS[0];
   buildSkinGrid();
   document.getElementById('nameInput').addEventListener('keydown', function(e){
     if(e.key==='Enter') startGame();
