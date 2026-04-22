@@ -288,7 +288,10 @@ var SKINS = [
   {e:'🇬🇧',n:'Murray',   abbr:'AM',frame:'#012169',grip:'#c8102e', unlock:300},
   {e:'🇨🇭',n:'Federer',  abbr:'RF',frame:'#c8102e',grip:'#8b0000', unlock:400},
   {e:'🇪🇸',n:'Nadal',    abbr:'RN',frame:'#c60b1e',grip:'#f1bf00', unlock:600},
-  {e:'🇷🇸',n:'Djokovic', abbr:'ND',frame:'#0033a0',grip:'#c6363c', unlock:700}
+  {e:'🇷🇸',n:'Djokovic', abbr:'ND',frame:'#0033a0',grip:'#c6363c', unlock:700},
+  {e:'🇺🇸',n:'McEnroe',  abbr:'JM',frame:'#b22222',grip:'#ffffff', unlock:0, mystery:true},
+  {e:'🇺🇸',n:'Connors',  abbr:'JC',frame:'#1a3a6e',grip:'#f5c400', unlock:0, mystery:true},
+  {e:'🇦🇺',n:'Laver',    abbr:'RL',frame:'#006400',grip:'#ffd700', unlock:0, mystery:true}
 ];
 
 // ===== UPGRADES =====
@@ -485,6 +488,7 @@ function buildSkinGrid() {
   g.innerHTML = '';
   var firstUnlockedSet = false;
   SKINS.forEach(function(s,i){
+    if(s.mystery && !WON_SKINS[i]) return; // hide mystery skins until won
     var locked = !isSkinUnlocked(i);
     var b = document.createElement('button');
     b.id = 'sk_'+i;
@@ -526,9 +530,9 @@ function startMysteryBattle() {
   var skin = getSelectedSkin();
   G.playerName = name;
   G.playerSkin = skin;
-  // Only free skins (unlock:0) eligible for mystery — not the Big 3 or Murray
+  // Only mystery-tagged skins eligible for mystery battle
   var pool = [];
-  for(var i=0;i<SKINS.length;i++){ if(SKINS[i].unlock === 0 && SKINS[i].n !== skin.n) pool.push(i); }
+  for(var i=0;i<SKINS.length;i++){ if(SKINS[i].mystery) pool.push(i); }
   var idx = pool[Math.floor(Math.random() * pool.length)];
   G.cpuSkin = SKINS[idx];
   G.mysteryBattle = true;
