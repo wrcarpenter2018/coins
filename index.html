@@ -578,7 +578,7 @@ function startMatch() {
   G.cpuMissDecided = false;
   G.cpuMissing = false;
   if(!G.mysteryBattle) {
-    var opts = SKINS.filter(function(s){ return s.n !== G.playerSkin.n; });
+    var opts = SKINS.filter(function(s){ return s.n !== G.playerSkin.n && !s.mystery; });
     G.cpuSkin = opts[Math.floor(Math.random() * opts.length)];
   }
   document.getElementById('sbCpuSkin').textContent = G.mysteryBattle ? '🎭' : G.cpuSkin.e;
