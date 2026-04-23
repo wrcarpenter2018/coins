@@ -113,6 +113,17 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 .trivia-next-btn{width:100%;padding:14px;font-size:15px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#4caf50,#2e7d32);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .2s}
 .trivia-next-btn:hover{transform:translateY(-2px)}
 
+/* GRAND SLAM */
+#slams{min-height:100vh;background:radial-gradient(ellipse at top,#1a1000,#0a0a1a);display:flex;flex-direction:column}
+.slam-card{border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;border:3px solid rgba(255,255,255,.1)}
+.slam-card:hover{transform:translateY(-3px)}
+.slam-card.claimed{border-color:#FFD700;opacity:1}
+.slam-trophy{font-size:44px;margin-bottom:6px}
+.slam-name{font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.slam-loc{font-size:10px;color:#aaa;margin-top:2px}
+.slam-surface{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:4px;padding:2px 8px;border-radius:10px;display:inline-block}
+.slam-claim{margin-top:8px;font-size:11px;font-weight:900;letter-spacing:1px}
+
 /* MATCHING */
 #matching{min-height:100vh;background:radial-gradient(ellipse at top,#1a0030,#0a0a1a);display:flex;flex-direction:column}
 .match-card{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:10px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .2s;user-select:none}
@@ -251,6 +262,25 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
       <button class="end-btn" id="matchingPlayBtn" onclick="startMatching()" disabled style="opacity:.4;background:linear-gradient(135deg,#e91e8c,#9c27b0);width:48%">🎴 MATCH</button>
       <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4;width:48%">🧠 TRIVIA</button>
     </div>
+    <div class="trivia-unlock locked" id="slamUnlock">
+      <div class="trivia-unlock-title" id="slamUnlockTitle">🔒 Grand Slam Trophy Room</div>
+      <div class="trivia-unlock-sub" id="slamUnlockSub">Reach 1000 coins to unlock!</div>
+    </div>
+    <div class="vault-btns">
+      <button class="end-btn" id="slamBtn" onclick="openSlams()" disabled style="opacity:.4;background:linear-gradient(135deg,#FFD700,#FF8C00);color:#000;width:100%">🏆 GRAND SLAM TROPHIES</button>
+    </div>
+  </div>
+</div>
+
+<!-- GRAND SLAM -->
+<div id="slams" class="hidden">
+  <div style="text-align:center;padding:16px 14px 8px">
+    <div style="font-size:26px;font-weight:900;background:linear-gradient(135deg,#FFD700,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🏆 GRAND SLAM TROPHIES</div>
+    <div style="font-size:11px;color:#888;margin-top:4px">Pick your trophy — earn your glory</div>
+  </div>
+  <div id="slamGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;margin:0 auto;padding:0 14px"></div>
+  <div style="text-align:center;margin-top:16px;padding-bottom:20px">
+    <button class="end-btn vault" onclick="openVault()">← BACK TO VAULT</button>
   </div>
 </div>
 
@@ -968,7 +998,7 @@ function setMsg(msg) {
 
 function show(id) {
   if(id !== 'matching' && M.timer){ clearInterval(M.timer); M.timer = null; }
-  ['welcome','game','end','vault','trivia','upgrades','matching'].forEach(function(s){
+  ['welcome','game','end','vault','trivia','upgrades','matching','slams'].forEach(function(s){
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
 }
@@ -1015,7 +1045,47 @@ function openVault() {
   var btn = document.getElementById('triviaPlayBtn');
   btn.disabled = !unlocked;
   btn.style.opacity = unlocked ? '1' : '0.4';
+  var slamUnlocked = G.coins >= 1000;
+  document.getElementById('slamUnlock').className = 'trivia-unlock' + (slamUnlocked ? '' : ' locked');
+  document.getElementById('slamUnlockTitle').textContent = slamUnlocked ? '🔓 Grand Slam Trophy Room — UNLOCKED!' : '🔒 Grand Slam Trophy Room';
+  document.getElementById('slamUnlockSub').textContent = slamUnlocked ? 'Pick your Grand Slam trophies!' : 'Reach 1000 coins to unlock. (' + G.coins + ' / 1000)';
+  var sb = document.getElementById('slamBtn');
+  sb.disabled = !slamUnlocked;
+  sb.style.opacity = slamUnlocked ? '1' : '0.4';
   show('vault');
+}
+
+// ===== GRAND SLAM =====
+var SLAMS = [
+  {name:'Australian Open', trophy:'🏆', loc:'Melbourne', surface:'Hard', surfaceColor:'#1565c0', bg:'linear-gradient(135deg,#0d47a1,#1a237e)', key:'ao'},
+  {name:'Roland Garros',   trophy:'🏆', loc:'Paris',     surface:'Clay', surfaceColor:'#bf360c', bg:'linear-gradient(135deg,#bf360c,#6d1f08)', key:'rg'},
+  {name:'Wimbledon',       trophy:'🏆', loc:'London',    surface:'Grass', surfaceColor:'#2e7d32', bg:'linear-gradient(135deg,#1b5e20,#33691e)', key:'wb'},
+  {name:'US Open',         trophy:'🏆', loc:'New York',  surface:'Hard', surfaceColor:'#4a148c', bg:'linear-gradient(135deg,#4a148c,#1a0050)', key:'uso'}
+];
+var CLAIMED_SLAMS = {};
+function saveSlams(){ try{ localStorage.setItem('lfo_slams', JSON.stringify(CLAIMED_SLAMS)); }catch(e){} }
+function loadSlams(){ try{ var v=JSON.parse(localStorage.getItem('lfo_slams')); if(v) CLAIMED_SLAMS=v; }catch(e){} }
+
+function openSlams() {
+  var grid = document.getElementById('slamGrid');
+  grid.innerHTML = '';
+  SLAMS.forEach(function(s) {
+    var card = document.createElement('div');
+    card.className = 'slam-card' + (CLAIMED_SLAMS[s.key] ? ' claimed' : '');
+    card.style.background = s.bg;
+    card.innerHTML = '<div class="slam-trophy">' + s.trophy + '</div>'
+      + '<div class="slam-name">' + s.name + '</div>'
+      + '<div class="slam-loc">' + s.loc + '</div>'
+      + '<div class="slam-surface" style="background:' + s.surfaceColor + '22;color:' + s.surfaceColor + ';border:1px solid ' + s.surfaceColor + '">' + s.surface + '</div>'
+      + '<div class="slam-claim" style="color:' + (CLAIMED_SLAMS[s.key] ? '#FFD700' : '#fff') + '">' + (CLAIMED_SLAMS[s.key] ? '🏆 CLAIMED!' : 'TAP TO CLAIM') + '</div>';
+    card.addEventListener('click', function() {
+      CLAIMED_SLAMS[s.key] = true;
+      saveSlams();
+      openSlams();
+    });
+    grid.appendChild(card);
+  });
+  show('slams');
 }
 
 // ===== MATCHING GAME =====
@@ -1191,6 +1261,7 @@ window.addEventListener('DOMContentLoaded', function(){
   G.coins = loadCoins();
   loadUpgrades();
   loadWonSkins();
+  loadSlams();
   G.playerSkin = SKINS[0];
   buildSkinGrid();
   document.getElementById('nameInput').addEventListener('keydown', function(e){
