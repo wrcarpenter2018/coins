@@ -113,6 +113,13 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 .trivia-next-btn{width:100%;padding:14px;font-size:15px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#4caf50,#2e7d32);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .2s}
 .trivia-next-btn:hover{transform:translateY(-2px)}
 
+/* MATCHING */
+#matching{min-height:100vh;background:radial-gradient(ellipse at top,#1a0030,#0a0a1a);display:flex;flex-direction:column}
+.match-card{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:10px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .2s;user-select:none}
+.match-card.flipped{background:rgba(233,30,140,.15);border-color:#e91e8c}
+.match-card.matched{background:rgba(76,175,80,.15);border-color:#4caf50;cursor:default}
+.match-card.hidden-card{visibility:hidden}
+
 /* UPGRADES */
 #upgrades{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at top,#0b1a30,#0a0a1a)}
 .upg-header{text-align:center;margin-bottom:20px}
@@ -228,6 +235,10 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="vault-bar-lbl" id="vaultBarLbl">100 / 1000</div>
     <div class="vault-section-lbl">Legend Unlocks</div>
     <div class="unlock-list" id="unlockList"></div>
+    <div class="trivia-unlock locked" id="matchingUnlock">
+      <div class="trivia-unlock-title" id="matchingUnlockTitle">🔒 Matching Game</div>
+      <div class="trivia-unlock-sub" id="matchingUnlockSub">Reach 300 coins to unlock!</div>
+    </div>
     <div class="trivia-unlock locked" id="triviaUnlock">
       <div class="trivia-unlock-title" id="triviaUnlockTitle">🔒 Tennis Trivia</div>
       <div class="trivia-unlock-sub" id="triviaUnlockSub">Reach 500 coins to unlock!</div>
@@ -235,8 +246,22 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="vault-btns">
       <button class="end-btn" onclick="goToMenu()">🏠 MENU</button>
       <button class="end-btn again" onclick="openUpgrades()">⚡ UPGRADES</button>
+      <button class="end-btn" id="matchingPlayBtn" onclick="startMatching()" disabled style="opacity:.4;background:linear-gradient(135deg,#e91e8c,#9c27b0)">🎴 MATCH</button>
       <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4">🧠 TRIVIA</button>
     </div>
+  </div>
+</div>
+
+<!-- MATCHING -->
+<div id="matching" class="hidden">
+  <div style="text-align:center;padding:14px 16px 6px">
+    <div style="font-size:20px;font-weight:900;color:#e91e8c;letter-spacing:2px">🎴 MATCH THE LEGENDS</div>
+    <div style="font-size:12px;color:#FFD700;font-weight:900;margin-top:4px" id="matchCoinDisp">🪙 0</div>
+    <div style="font-size:11px;color:#888;margin-top:2px" id="matchStatus">Find all matching pairs!</div>
+  </div>
+  <div id="matchGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:0 auto;padding:0 14px"></div>
+  <div style="text-align:center;margin-top:14px">
+    <button class="end-btn vault" onclick="openVault()">← BACK TO VAULT</button>
   </div>
 </div>
 
@@ -939,7 +964,7 @@ function setMsg(msg) {
 }
 
 function show(id) {
-  ['welcome','game','end','vault','trivia','upgrades'].forEach(function(s){
+  ['welcome','game','end','vault','trivia','upgrades','matching'].forEach(function(s){
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
 }
@@ -968,6 +993,15 @@ function openVault() {
       +'<span style="font-size:10px;color:#555;margin-left:auto">'+s.unlock+' 🪙 '+(done?'✓ UNLOCKED':'')+'</span>'
       +'</div>';
   });
+  var matchUnlocked = G.coins >= 300;
+  document.getElementById('matchingUnlock').className = 'trivia-unlock' + (matchUnlocked ? '' : ' locked');
+  document.getElementById('matchingUnlockTitle').textContent = matchUnlocked ? '🔓 Matching Game — UNLOCKED!' : '🔒 Matching Game';
+  document.getElementById('matchingUnlockSub').textContent = matchUnlocked
+    ? 'Match the tennis legends and earn coins!'
+    : 'Reach 300 coins to unlock. (' + G.coins + ' / 300)';
+  var mbtn = document.getElementById('matchingPlayBtn');
+  mbtn.disabled = !matchUnlocked;
+  mbtn.style.opacity = matchUnlocked ? '1' : '0.4';
   var unlocked = G.coins >= 500;
   document.getElementById('triviaUnlock').className = 'trivia-unlock' + (unlocked ? '' : ' locked');
   document.getElementById('triviaUnlockTitle').textContent = unlocked ? '🔓 Tennis Trivia — UNLOCKED!' : '🔒 Tennis Trivia';
@@ -978,6 +1012,69 @@ function openVault() {
   btn.disabled = !unlocked;
   btn.style.opacity = unlocked ? '1' : '0.4';
   show('vault');
+}
+
+// ===== MATCHING GAME =====
+var M = { cards:[], flipped:[], matched:0, locked:false };
+
+function startMatching() {
+  if(G.coins < 300) return;
+  var pool = SKINS.filter(function(s){ return !s.mystery; }).slice(0,8);
+  var pairs = [];
+  pool.forEach(function(s){ pairs.push(s); pairs.push(s); });
+  // shuffle
+  for(var i=pairs.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pairs[i];pairs[i]=pairs[j];pairs[j]=t;}
+  M.cards = pairs;
+  M.flipped = [];
+  M.matched = 0;
+  M.locked = false;
+  document.getElementById('matchCoinDisp').textContent = '🪙 ' + G.coins;
+  document.getElementById('matchStatus').textContent = 'Find all ' + pool.length + ' matching pairs!';
+  var grid = document.getElementById('matchGrid');
+  grid.innerHTML = '';
+  pairs.forEach(function(s, i){
+    var card = document.createElement('div');
+    card.className = 'match-card';
+    card.textContent = '🎾';
+    card.dataset.idx = i;
+    card.dataset.name = s.n;
+    card.addEventListener('click', function(){ flipCard(i, card, s); });
+    grid.appendChild(card);
+  });
+  show('matching');
+}
+
+function flipCard(idx, card, s) {
+  if(M.locked) return;
+  if(card.classList.contains('matched')) return;
+  if(M.flipped.length === 1 && M.flipped[0].idx === idx) return;
+  card.textContent = s.e;
+  card.classList.add('flipped');
+  M.flipped.push({idx:idx, card:card, skin:s});
+  if(M.flipped.length === 2) {
+    M.locked = true;
+    setTimeout(function(){
+      var a = M.flipped[0], b = M.flipped[1];
+      if(a.skin.n === b.skin.n) {
+        a.card.classList.add('matched'); a.card.classList.remove('flipped');
+        b.card.classList.add('matched'); b.card.classList.remove('flipped');
+        M.matched++;
+        var total = M.cards.filter(function(c,i,arr){ return arr.indexOf(c)===i; }).length;
+        if(M.matched >= total) {
+          var earned = 30;
+          G.coins += earned;
+          saveCoins();
+          document.getElementById('matchCoinDisp').textContent = '🪙 ' + G.coins;
+          document.getElementById('matchStatus').textContent = '🏆 All matched! +' + earned + ' coins!';
+        }
+      } else {
+        a.card.textContent = '🎾'; a.card.classList.remove('flipped');
+        b.card.textContent = '🎾'; b.card.classList.remove('flipped');
+      }
+      M.flipped = [];
+      M.locked = false;
+    }, 800);
+  }
 }
 
 // ===== TRIVIA =====
