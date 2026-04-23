@@ -262,6 +262,8 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
       <button class="end-btn" id="matchingPlayBtn" onclick="startMatching()" disabled style="opacity:.4;background:linear-gradient(135deg,#e91e8c,#9c27b0);width:48%">🎴 MATCH</button>
       <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4;width:48%">🧠 TRIVIA</button>
     </div>
+    <div class="vault-section-lbl">Grand Slam Trophies</div>
+    <div id="vaultSlamRow" style="display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;margin-bottom:4px"></div>
     <div class="trivia-unlock locked" id="slamUnlock">
       <div class="trivia-unlock-title" id="slamUnlockTitle">🔒 Grand Slam Trophy Room</div>
       <div class="trivia-unlock-sub" id="slamUnlockSub">Reach 1000 coins to unlock!</div>
@@ -1045,6 +1047,15 @@ function openVault() {
   var btn = document.getElementById('triviaPlayBtn');
   btn.disabled = !unlocked;
   btn.style.opacity = unlocked ? '1' : '0.4';
+  var slamRow = document.getElementById('vaultSlamRow');
+  slamRow.innerHTML = '';
+  SLAMS.forEach(function(s){
+    var claimed = CLAIMED_SLAMS[s.key];
+    slamRow.innerHTML += '<div style="text-align:center;opacity:'+(claimed?'1':'0.25')+';">'
+      +'<div style="font-size:28px">'+(claimed?'🏆':'🔒')+'</div>'
+      +'<div style="font-size:8px;color:'+(claimed?'#FFD700':'#555')+';font-weight:900;letter-spacing:1px;text-transform:uppercase;max-width:60px">'+s.name.replace('Roland Garros','RG').replace('Australian Open','AO').replace('US Open','USO')+'</div>'
+      +'</div>';
+  });
   var slamUnlocked = G.coins >= 1000;
   document.getElementById('slamUnlock').className = 'trivia-unlock' + (slamUnlocked ? '' : ' locked');
   document.getElementById('slamUnlockTitle').textContent = slamUnlocked ? '🔓 Grand Slam Trophy Room — UNLOCKED!' : '🔒 Grand Slam Trophy Room';
