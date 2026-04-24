@@ -184,7 +184,15 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
       </optgroup>
     </select>
     <div class="lbl">Choose Your Round</div>
-    <div style="display:flex;gap:3px;margin-bottom:5px;overflow-x:auto;padding-bottom:2px" id="roundPicker"></div>
+    <select id="roundSelect" onchange="selectRound(this.value)" style="width:100%;padding:6px;font-size:12px;font-family:inherit;font-weight:900;background:#1a1a2e;border:2px solid rgba(76,175,80,.5);border-radius:8px;color:#fff;margin-bottom:5px;outline:none">
+      <option value="r1">Round 1 — +30 coins</option>
+      <option value="r2">Round 2 — +40 coins</option>
+      <option value="r3">Round 3 — +50 coins</option>
+      <option value="r4">Round 4 — +60 coins</option>
+      <option value="qf">Quarterfinal — +80 coins</option>
+      <option value="sf">Semifinal — +100 coins</option>
+      <option value="f">Final 🏆 — +150 coins</option>
+    </select>
     <div class="lbl">Choose Your Skin</div>
     <div class="skin-grid" id="skinGrid"></div>
     <button id="startBtn" onclick="startGame()">🎾 PLAY TENNIS</button>
@@ -620,21 +628,11 @@ var ROUNDS = [
 ];
 
 function buildRoundPicker() {
-  var el = document.getElementById('roundPicker');
-  el.innerHTML = '';
-  ROUNDS.forEach(function(r) {
-    var b = document.createElement('button');
-    b.textContent = r.label;
-    b.dataset.round = r.key;
-    var sel = G.selectedRound === r.key;
-    b.style.cssText = 'flex-shrink:0;padding:5px 8px;font-size:11px;font-family:inherit;font-weight:900;border-radius:8px;cursor:pointer;border:2px solid '+(sel?'#FFD700':'rgba(255,255,255,.2)')+';background:'+(sel?'linear-gradient(135deg,#FFD700,#FF8C00)':'rgba(255,255,255,.05)')+';color:'+(sel?'#000':'#fff');
-    b.addEventListener('click', function(){ selectRound(r.key); });
-    el.appendChild(b);
-  });
+  var sel = document.getElementById('roundSelect');
+  if(sel) sel.value = G.selectedRound;
 }
 function selectRound(key) {
   G.selectedRound = key;
-  buildRoundPicker();
 }
 
 var SLAM_THEMES = {
