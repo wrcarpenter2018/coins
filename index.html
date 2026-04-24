@@ -874,10 +874,10 @@ function endMatch(playerWon) {
     if(finalWin) {
       WON_TROPHIES[G.selectedSlam] = true;
       saveTrophies();
-      var slamDef = SLAMS.filter(function(s){ return s.key === G.selectedSlam; })[0] || SLAMS[0];
+      var tName = (SLAM_THEMES[G.selectedSlam] && SLAM_THEMES[G.selectedSlam].label) || G.selectedSlam.toUpperCase();
       trophyReveal.style.display = 'block';
       document.getElementById('trophyRevealIcon').textContent = '🏆';
-      document.getElementById('trophyRevealName').textContent = slamDef.name + ' Champion!';
+      document.getElementById('trophyRevealName').textContent = tName + ' CHAMPION!';
     }
     G.mysteryBattle = false;
     document.getElementById('endEm').textContent = grandWin ? '💎' : playerWon ? '🏆' : brokeOut ? '💸' : '😔';
@@ -1144,12 +1144,13 @@ function openVault() {
   btn.style.opacity = unlocked ? '1' : '0.4';
   var trophyRow = document.getElementById('vaultTrophyRow');
   trophyRow.innerHTML = '';
-  SLAMS.forEach(function(s){
-    var won = WON_TROPHIES[s.key];
+  var ALL_TOURNEY_KEYS = ['wb','ao','rg','uso','iw','mia','mc','mad','rom','cin','sha','par'];
+  ALL_TOURNEY_KEYS.forEach(function(key){
+    var won = WON_TROPHIES[key];
+    var lbl = SLAM_THEMES[key] ? SLAM_THEMES[key].label.replace('AUSTRALIAN OPEN','AO').replace('ROLAND GARROS','RG').replace('US OPEN','USO').replace('INDIAN WELLS','IW').replace('MIAMI OPEN','MIAMI').replace('MONTE CARLO','MC').replace('MADRID OPEN','MADRID').replace('CINCINNATI','CINCI').replace('SHANGHAI','SHA').replace('PARIS MASTERS','PARIS') : key.toUpperCase();
     trophyRow.innerHTML += '<div style="text-align:center;opacity:'+(won?'1':'0.2')+'">'
-      +'<div style="font-size:32px">'+(won?'🏆':'🔒')+'</div>'
-      +'<div style="font-size:7px;color:'+(won?'#FFD700':'#555')+';font-weight:900;letter-spacing:1px;max-width:54px;text-align:center">'
-      +s.name.replace('Australian Open','AO').replace('Roland Garros','RG').replace('US Open','USO')+'</div>'
+      +'<div style="font-size:26px">'+(won?'🏆':'🔒')+'</div>'
+      +'<div style="font-size:7px;color:'+(won?'#FFD700':'#555')+';font-weight:900;letter-spacing:1px;max-width:50px;text-align:center">'+lbl+'</div>'
       +'</div>';
   });
   var slamRow = document.getElementById('vaultSlamRow');
