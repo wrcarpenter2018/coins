@@ -233,6 +233,12 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div id="revealSkin" style="font-size:52px"></div>
     <div id="revealName" style="font-size:16px;font-weight:900;color:#fff;margin-top:4px"></div>
   </div>
+  <div id="trophyReveal" style="display:none;margin:10px 0;padding:14px 20px;background:rgba(255,215,0,.12);border:3px solid #FFD700;border-radius:14px;text-align:center">
+    <div style="font-size:11px;letter-spacing:3px;color:#FFD700;font-weight:900;margin-bottom:4px">🏆 GRAND SLAM CHAMPION!</div>
+    <div id="trophyRevealIcon" style="font-size:56px">🏆</div>
+    <div id="trophyRevealName" style="font-size:15px;font-weight:900;color:#FFD700;margin-top:4px"></div>
+    <div style="font-size:11px;color:#aaa;margin-top:2px">Added to your trophy cabinet!</div>
+  </div>
   <div class="end-coins" id="endCoins">150</div>
   <div class="end-clbl">🪙 coins</div>
   <div class="end-btns">
@@ -270,6 +276,8 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
       <button class="end-btn" id="matchingPlayBtn" onclick="startMatching()" disabled style="opacity:.4;background:linear-gradient(135deg,#e91e8c,#9c27b0);width:48%">🎴 MATCH</button>
       <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4;width:48%">🧠 TRIVIA</button>
     </div>
+    <div class="vault-section-lbl">🏆 Trophy Cabinet</div>
+    <div id="vaultTrophyRow" style="display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;margin-bottom:4px"></div>
     <div class="vault-section-lbl">Grand Slam Trophies</div>
     <div id="vaultSlamRow" style="display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;margin-bottom:4px"></div>
     <div class="trivia-unlock locked" id="slamUnlock">
@@ -840,8 +848,11 @@ function endMatch(playerWon) {
     var grandWin = G.coins >= 1000;
     var brokeOut = G.coins <= 0;
     var mysteryWin = G.mysteryBattle && playerWon;
+    var finalWin = playerWon && G.selectedRound === 'f';
     var reveal = document.getElementById('endReveal');
+    var trophyReveal = document.getElementById('trophyReveal');
     reveal.style.display = 'none';
+    trophyReveal.style.display = 'none';
     if(mysteryWin) {
       WON_SKINS[G.mysterySkinIdx] = true;
       saveWonSkins();
@@ -849,6 +860,14 @@ function endMatch(playerWon) {
       reveal.style.display = 'block';
       document.getElementById('revealSkin').textContent = G.cpuSkin.e;
       document.getElementById('revealName').textContent = G.cpuSkin.n + ' UNLOCKED!';
+    }
+    if(finalWin) {
+      WON_TROPHIES[G.selectedSlam] = true;
+      saveTrophies();
+      var slamDef = SLAMS.filter(function(s){ return s.key === G.selectedSlam; })[0] || SLAMS[0];
+      trophyReveal.style.display = 'block';
+      document.getElementById('trophyRevealIcon').textContent = '🏆';
+      document.getElementById('trophyRevealName').textContent = slamDef.name + ' Champion!';
     }
     G.mysteryBattle = false;
     document.getElementById('endEm').textContent = grandWin ? '💎' : playerWon ? '🏆' : brokeOut ? '💸' : '😔';
@@ -1113,6 +1132,16 @@ function openVault() {
   var btn = document.getElementById('triviaPlayBtn');
   btn.disabled = !unlocked;
   btn.style.opacity = unlocked ? '1' : '0.4';
+  var trophyRow = document.getElementById('vaultTrophyRow');
+  trophyRow.innerHTML = '';
+  SLAMS.forEach(function(s){
+    var won = WON_TROPHIES[s.key];
+    trophyRow.innerHTML += '<div style="text-align:center;opacity:'+(won?'1':'0.2')+'">'
+      +'<div style="font-size:32px">'+(won?'🏆':'🔒')+'</div>'
+      +'<div style="font-size:7px;color:'+(won?'#FFD700':'#555')+';font-weight:900;letter-spacing:1px;max-width:54px;text-align:center">'
+      +s.name.replace('Australian Open','AO').replace('Roland Garros','RG').replace('US Open','USO')+'</div>'
+      +'</div>';
+  });
   var slamRow = document.getElementById('vaultSlamRow');
   slamRow.innerHTML = '';
   SLAMS.forEach(function(s){
@@ -1142,6 +1171,10 @@ var SLAMS = [
 var CLAIMED_SLAMS = {};
 function saveSlams(){ try{ localStorage.setItem('lfo_slams', JSON.stringify(CLAIMED_SLAMS)); }catch(e){} }
 function loadSlams(){ try{ var v=JSON.parse(localStorage.getItem('lfo_slams')); if(v) CLAIMED_SLAMS=v; }catch(e){} }
+
+var WON_TROPHIES = {}; // {slamKey: true}
+function saveTrophies(){ try{ localStorage.setItem('lfo_trophies', JSON.stringify(WON_TROPHIES)); }catch(e){} }
+function loadTrophies(){ try{ var v=JSON.parse(localStorage.getItem('lfo_trophies')); if(v) WON_TROPHIES=v; }catch(e){} }
 
 function openSlams() {
   var grid = document.getElementById('slamGrid');
@@ -1343,6 +1376,7 @@ window.addEventListener('DOMContentLoaded', function(){
   loadUpgrades();
   loadWonSkins();
   loadSlams();
+  loadTrophies();
   G.playerSkin = SKINS[0];
   buildSkinGrid();
   buildRoundPicker();
