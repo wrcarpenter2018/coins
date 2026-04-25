@@ -156,11 +156,11 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
 <div id="welcome">
   <div class="logo-title">🎾 LEGENDS FACE OFF</div>
   <div class="logo-sub">Play to Win</div>
-  <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">
-    <canvas id="qrCanvas" width="80" height="80" style="border-radius:4px;border:2px solid #4caf50;background:#fff"></canvas>
-    <div style="font-size:8px;color:#4caf50;letter-spacing:2px">SCAN TO PLAY</div>
-  </div>
   <div class="box">
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px">
+      <canvas id="qrCanvas" width="80" height="80" style="border-radius:4px;border:2px solid #4caf50;background:#fff"></canvas>
+      <div style="font-size:8px;color:#4caf50;letter-spacing:2px">SCAN TO PLAY</div>
+    </div>
     <div class="welcome-coins" id="welcomeCoins">🪙 100 coins</div>
     <div class="lbl">Your Name</div>
     <input type="text" id="nameInput" placeholder="Enter your name..." maxlength="16" />
@@ -200,6 +200,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <button id="vaultBtn" onclick="openVault()" style="width:100%;margin-top:4px;padding:5px;font-size:11px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(135deg,#7b2ff7,#4a00b4);border:none;border-radius:7px;color:#fff;cursor:pointer">🏦 MY VAULT</button>
   </div>
 </div>
+
 
 <!-- GAME -->
 <div id="game" class="hidden">
