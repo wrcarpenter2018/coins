@@ -307,6 +307,10 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
       <div class="trivia-unlock-title" id="triviaUnlockTitle">🔒 Tennis Trivia</div>
       <div class="trivia-unlock-sub" id="triviaUnlockSub">Reach 500 coins to unlock!</div>
     </div>
+    <div class="trivia-unlock locked" id="betterUnlock">
+      <div class="trivia-unlock-title" id="betterUnlockTitle">🔒 Who's Better?</div>
+      <div class="trivia-unlock-sub" id="betterUnlockSub">Reach 700 coins to unlock!</div>
+    </div>
     <div class="vault-btns">
       <button class="end-btn" onclick="goToMenu()">🏠 MENU</button>
       <button class="end-btn again" onclick="openUpgrades()">⚡ UPGRADES</button>
@@ -314,6 +318,9 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
     <div class="vault-btns">
       <button class="end-btn" id="matchingPlayBtn" onclick="startMatching()" disabled style="opacity:.4;background:linear-gradient(135deg,#e91e8c,#9c27b0);width:48%">🎴 MATCH</button>
       <button class="end-btn vault" id="triviaPlayBtn" onclick="startTrivia()" disabled style="opacity:.4;width:48%">🧠 TRIVIA</button>
+    </div>
+    <div class="vault-btns">
+      <button class="end-btn" id="betterPlayBtn" onclick="startBetter()" disabled style="opacity:.4;background:linear-gradient(135deg,#FFD700,#FF8C00);color:#000;width:100%">🏆 WHO'S BETTER?</button>
     </div>
     <div class="vault-section-lbl">🏆 Trophy Cabinet</div>
     <div id="vaultTrophyRow" style="display:flex;gap:8px;width:100%;justify-content:center;flex-wrap:wrap;margin-bottom:4px"></div>
@@ -337,6 +344,20 @@ body{font-family:Arial Black,Arial,sans-serif;background:#0a0a1a;color:#fff;min-
   </div>
   <div id="slamGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;margin:0 auto;padding:0 14px"></div>
   <div style="text-align:center;margin-top:16px;padding-bottom:20px">
+    <button class="end-btn vault" onclick="openVault()">← BACK TO VAULT</button>
+  </div>
+</div>
+
+<!-- WHO'S BETTER -->
+<div id="better" class="hidden">
+  <div style="text-align:center;padding:16px 14px 8px">
+    <div style="font-size:22px;font-weight:900;background:linear-gradient(135deg,#FFD700,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🏆 WHO'S BETTER?</div>
+    <div style="font-size:11px;color:#888;margin:4px 0 8px" id="betterCategory"></div>
+    <div style="font-size:13px;font-weight:900;color:#4caf50;letter-spacing:1px" id="betterScore"></div>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;padding:8px 14px;max-width:400px;margin:0 auto" id="betterCards"></div>
+  <div style="text-align:center;margin-top:10px;font-size:20px;font-weight:900;min-height:32px;letter-spacing:1px" id="betterFeedback"></div>
+  <div style="text-align:center;margin-top:12px;padding-bottom:20px">
     <button class="end-btn vault" onclick="openVault()">← BACK TO VAULT</button>
   </div>
 </div>
@@ -1181,7 +1202,7 @@ function setMsg(msg) {
 
 function show(id) {
   if(id !== 'matching' && M.timer){ clearInterval(M.timer); M.timer = null; }
-  ['welcome','game','end','vault','trivia','upgrades','matching','slams'].forEach(function(s){
+  ['welcome','game','end','vault','trivia','upgrades','matching','slams','better'].forEach(function(s){
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
 }
@@ -1228,6 +1249,13 @@ function openVault() {
   var btn = document.getElementById('triviaPlayBtn');
   btn.disabled = !unlocked;
   btn.style.opacity = unlocked ? '1' : '0.4';
+  var betterUnlocked = G.coins >= 700;
+  document.getElementById('betterUnlock').className = 'trivia-unlock' + (betterUnlocked ? '' : ' locked');
+  document.getElementById('betterUnlockTitle').textContent = betterUnlocked ? "🔓 Who's Better? — UNLOCKED!" : "🔒 Who's Better?";
+  document.getElementById('betterUnlockSub').textContent = betterUnlocked ? 'Guess which player is better and earn coins!' : 'Reach 700 coins to unlock. (' + G.coins + ' / 700)';
+  var bbtn = document.getElementById('betterPlayBtn');
+  bbtn.disabled = !betterUnlocked;
+  bbtn.style.opacity = betterUnlocked ? '1' : '0.4';
   var trophyRow = document.getElementById('vaultTrophyRow');
   trophyRow.innerHTML = '';
   var ALL_TOURNEY_KEYS = ['wb','ao','rg','uso','iw','mia','mc','mad','rom','cin','sha','par','can','rot','rio','dub','aca','bar','hal','que','ham','was','tok','bas','vie'];
@@ -1491,6 +1519,83 @@ function drawQR(canvasId, text) {
     ctx2.fillText('wrcarpenter2018.github.io', c.width/2, 46);
   };
   img.src = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(text) + '&choe=UTF-8';
+}
+
+// ===== WHO'S BETTER =====
+var BETTER_PLAYERS = [
+  {name:'Djokovic', e:'🇷🇸', slams:24, titles:97},
+  {name:'Federer',  e:'🇨🇭', slams:20, titles:103},
+  {name:'Nadal',    e:'🇪🇸', slams:22, titles:92},
+  {name:'Murray',   e:'🇬🇧', slams:3,  titles:46},
+  {name:'Agassi',   e:'🇺🇸', slams:8,  titles:60},
+  {name:'Sampras',  e:'🇺🇸', slams:14, titles:64},
+  {name:'Lendl',    e:'🇨🇿', slams:8,  titles:94},
+  {name:'McEnroe',  e:'🇺🇸', slams:7,  titles:77},
+  {name:'Connors',  e:'🇺🇸', slams:8,  titles:109},
+  {name:'Becker',   e:'🇩🇪', slams:6,  titles:49},
+  {name:'Borg',     e:'🇸🇪', slams:11, titles:64},
+  {name:'Alcaraz',  e:'🇪🇸', slams:4,  titles:18},
+  {name:'Sinner',   e:'🇮🇹', slams:2,  titles:22},
+  {name:'Zverev',   e:'🇩🇪', slams:0,  titles:24},
+  {name:'Rune',     e:'🇩🇰', slams:0,  titles:6},
+  {name:'Laver',    e:'🇦🇺', slams:11, titles:200}
+];
+var BETTER_CATS = [
+  {label:'Who has more Grand Slam titles?', key:'slams'},
+  {label:'Who has more career titles?',     key:'titles'}
+];
+var BT = {round:0, total:5, earned:0, cat:null, p1:null, p2:null, answered:false};
+
+function startBetter() {
+  if(G.coins < 700) return;
+  BT.round = 0; BT.earned = 0;
+  show('better');
+  nextBetterRound();
+}
+
+function nextBetterRound() {
+  if(BT.round >= BT.total) {
+    G.coins += BT.earned; saveCoins();
+    document.getElementById('betterFeedback').textContent = '✅ Done! +' + BT.earned + ' coins earned!';
+    document.getElementById('betterCards').innerHTML = '<button class="end-btn vault" onclick="openVault()" style="margin-top:12px">← BACK TO VAULT</button>';
+    document.getElementById('betterCategory').textContent = '';
+    document.getElementById('betterScore').textContent = '';
+    return;
+  }
+  BT.answered = false;
+  BT.cat = BETTER_CATS[Math.floor(Math.random()*BETTER_CATS.length)];
+  var pool = shuffleArr(BETTER_PLAYERS.slice());
+  BT.p1 = pool[0]; BT.p2 = pool[1];
+  while(BT.p1[BT.cat.key] === BT.p2[BT.cat.key]) { pool = shuffleArr(BETTER_PLAYERS.slice()); BT.p1=pool[0]; BT.p2=pool[1]; }
+  document.getElementById('betterCategory').textContent = BT.cat.label;
+  document.getElementById('betterScore').textContent = 'Round ' + (BT.round+1) + ' / ' + BT.total + '  |  Earned: ' + BT.earned + ' coins';
+  document.getElementById('betterFeedback').textContent = '';
+  var cards = document.getElementById('betterCards');
+  cards.innerHTML = [BT.p1, BT.p2].map(function(p, i){
+    return '<div onclick="answerBetter('+i+')" style="flex:1;background:rgba(255,255,255,0.06);border:2px solid rgba(76,175,80,0.4);border-radius:14px;padding:18px 8px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor=\'#4caf50\'" onmouseout="this.style.borderColor=\'rgba(76,175,80,0.4)\'">'
+      +'<div style="font-size:36px">'+p.e+'</div>'
+      +'<div style="font-size:14px;font-weight:900;margin-top:6px;letter-spacing:1px">'+p.name+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function answerBetter(idx) {
+  if(BT.answered) return;
+  BT.answered = true;
+  var chosen = idx===0 ? BT.p1 : BT.p2;
+  var other  = idx===0 ? BT.p2 : BT.p1;
+  var correct = chosen[BT.cat.key] > other[BT.cat.key];
+  var fb = document.getElementById('betterFeedback');
+  if(correct){
+    BT.earned += 20;
+    fb.textContent = '✅ Correct! +20 coins';
+    fb.style.color = '#4caf50';
+  } else {
+    fb.textContent = '❌ Wrong! ' + other.name + ' had more (' + other[BT.cat.key] + ' vs ' + chosen[BT.cat.key] + ')';
+    fb.style.color = '#ff4444';
+  }
+  BT.round++;
+  setTimeout(nextBetterRound, 1800);
 }
 
 // ===== INIT =====
