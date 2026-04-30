@@ -1705,11 +1705,9 @@ function nextBetterRound() {
     return;
   }
   BT.answered = false;
-  BT.cat = BETTER_CATS[1]; // always use titles
-  var idx1 = Math.floor(Math.random()*BETTER_PLAYERS.length);
-  var idx2;
-  do { idx2 = Math.floor(Math.random()*BETTER_PLAYERS.length); } while(idx2===idx1 || BETTER_PLAYERS[idx1].titles===BETTER_PLAYERS[idx2].titles);
-  BT.p1 = BETTER_PLAYERS[idx1]; BT.p2 = BETTER_PLAYERS[idx2];
+  BT.cat = BETTER_CATS[1];
+  var pool2 = shuffleArr(BETTER_PLAYERS.slice());
+  BT.p1 = pool2[0]; BT.p2 = pool2[1];
   document.getElementById('betterCategory').textContent = BT.cat.label;
   document.getElementById('betterScore').textContent = 'Round ' + (BT.round+1) + ' / ' + BT.total + '  |  Earned: ' + BT.earned + ' coins';
   document.getElementById('betterFeedback').textContent = '';
@@ -1727,14 +1725,18 @@ function answerBetter(idx) {
   BT.answered = true;
   var chosen = idx===0 ? BT.p1 : BT.p2;
   var other  = idx===0 ? BT.p2 : BT.p1;
-  var correct = chosen[BT.cat.key] > other[BT.cat.key];
+  var chosenVal = chosen[BT.cat.key], otherVal = other[BT.cat.key];
   var fb = document.getElementById('betterFeedback');
-  if(correct){
+  if(chosenVal === otherVal){
+    BT.earned += 10;
+    fb.textContent = '🤝 Equal! Both have ' + chosenVal + ' titles. +10 coins!';
+    fb.style.color = '#FFD700';
+  } else if(chosenVal > otherVal){
     BT.earned += 20;
-    fb.textContent = '✅ Correct! +20 coins';
+    fb.textContent = '✅ Correct! ' + chosen.name + ' has more (' + chosenVal + ' vs ' + otherVal + '). +20 coins!';
     fb.style.color = '#4caf50';
   } else {
-    fb.textContent = '❌ Wrong! ' + other.name + ' had more (' + other[BT.cat.key] + ' vs ' + chosen[BT.cat.key] + ')';
+    fb.textContent = '❌ Wrong! ' + other.name + ' had more (' + otherVal + ' vs ' + chosenVal + ')';
     fb.style.color = '#ff4444';
   }
   BT.round++;
