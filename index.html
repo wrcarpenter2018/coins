@@ -1669,10 +1669,10 @@ function spinWheel() {
       G.coins += 15; saveCoins();
       document.getElementById('wheelResult').textContent = landed.e + ' ' + landed.name + '!';
       document.getElementById('wheelCoinsEarned').textContent = '+15 coins earned!';
-      var info = COUNTRY_INFO[landed.name];
+      var info = COUNTRY_INFO[landed.name] || {stars:'Top ATP players', fact:'A great tennis nation!'};
       var infoEl = document.getElementById('countryInfo');
-      if(info){ infoEl.style.display='block'; infoEl.innerHTML='<div style="color:#FFD700;font-weight:900;margin-bottom:4px">⭐ Stars: '+info.stars+'</div><div>'+info.fact+'</div>'; }
-      else { infoEl.style.display='none'; }
+      infoEl.style.display = 'block';
+      infoEl.innerHTML = '<div style="color:#FFD700;font-weight:900;margin-bottom:4px">⭐ Stars: ' + info.stars + '</div><div style="color:#ccc">' + info.fact + '</div>';
       renderCollectedCountries();
     }
   }
