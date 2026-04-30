@@ -1604,9 +1604,12 @@ function drawWheel(angle) {
     wctx.save();
     wctx.translate(cx,cy);
     wctx.rotate(start+arc/2);
-    wctx.textAlign='right'; wctx.textBaseline='middle';
-    wctx.font='18px serif';
-    wctx.fillText(WHEEL_COUNTRIES[i].e, r-8, 0);
+    wctx.textAlign='center'; wctx.textBaseline='middle';
+    wctx.font='22px Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, serif';
+    wctx.fillText(WHEEL_COUNTRIES[i].e, r-22, 0);
+    wctx.font='bold 8px Arial';
+    wctx.fillStyle='#fff';
+    wctx.fillText(WHEEL_COUNTRIES[i].name.split(' ')[0], r-48, 12);
     wctx.restore();
   }
   // Center circle
