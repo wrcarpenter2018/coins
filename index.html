@@ -1624,7 +1624,7 @@ function spinWheel() {
   var extraSpins = 5 + Math.random()*5;
   var extraDeg = Math.random()*360;
   var totalDeg = extraSpins*360 + extraDeg;
-  var start = null, duration = 4000;
+  var start = null, duration = 15000;
   var startRot = WHL.rotation;
   function frame(ts) {
     if(!start) start = ts;
